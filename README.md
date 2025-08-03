@@ -1,4 +1,4 @@
-# Go Starter Kit
+# GoFuse
 
 一个轻量、模块化、可扩展的 Go 项目启动框架，内置常用业务组件的封装，包括 Gin、Redis、数据库、配置管理、日志系统等，适合用于快速启动中小型后端项目。
 
@@ -24,6 +24,6 @@
 ### 克隆项目
 
 ```bash
-git clone git@gitee.com:entroplex4117/go-torch.git
-cd go-torch
+git clone git@gitee.com:entroplex4117/GoFuse.git
+cd GoFuse
 ```
