@@ -46,6 +46,16 @@ func (c *Context) Header() http.Header {
 	return c.GinCtx.Request.Header
 }
 
+// Next 执行下一个handler
+func (c *Context) Next() {
+	c.GinCtx.Next()
+}
+
+// Abort 终端执行
+func (c *Context) Abort() {
+	c.GinCtx.Abort()
+}
+
 // OK 响应成功，data为响应的数据
 func (c *Context) OK(data any) {
 	c.Response(http.StatusOK, data)
@@ -69,6 +79,7 @@ func (c *Context) Response(code int, data any) {
 	}
 }
 
+// IP 返回客户端真实IP
 func (c *Context) IP() string {
 	return c.GinCtx.ClientIP()
 }
