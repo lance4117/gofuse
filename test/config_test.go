@@ -1,15 +1,15 @@
 package test
 
 import (
-	"gofuse/config"
-	"gofuse/logger"
+	"gofuse/fxconfig"
+	"gofuse/fxlogger"
 	"testing"
 )
 
 func TestGetConfig(t *testing.T) {
-	config.InitConfig("")
+	fxconfig.InitConfig("")
 
-	logger.Info(config.All())
+	fxlogger.Info(fxconfig.All())
 
-	logger.Info(config.GetString("app.name"))
+	fxlogger.Info(fxconfig.GetString("app.name"))
 }

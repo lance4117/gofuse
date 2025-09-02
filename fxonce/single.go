@@ -1,9 +1,9 @@
-package single
+package fxonce
 
 import "sync"
 
-// DoSingle 单列模式
-func DoSingle[T any](fn func() T) func() T {
+// Do 单列模式
+func Do[T any](fn func() T) func() T {
 	var (
 		once sync.Once
 		s    T
@@ -16,8 +16,8 @@ func DoSingle[T any](fn func() T) func() T {
 	}
 }
 
-// DoSingleWithParam 单列带参数模式 泛型函数
-func DoSingleWithParam[T any, P any](fn func(P) T) func(P) T {
+// DoWithParam 单列带参数模式 泛型函数
+func DoWithParam[T any, P any](fn func(P) T) func(P) T {
 	var (
 		once sync.Once
 		s    T
