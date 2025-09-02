@@ -32,6 +32,7 @@ func (e *Engine) Run(addr ...string) {
 	var path string
 	// 默认本地8080
 	if len(addr) == 0 {
+		logger.Info("HTTP Service run at Default")
 		path = "127.0.0.1:8080"
 	} else {
 		path = addr[0]
