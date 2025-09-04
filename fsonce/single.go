@@ -2,7 +2,7 @@ package fsonce
 
 import "sync"
 
-// Do 单列模式
+// Do 单例模式
 func Do[T any](fn func() T) func() T {
 	var (
 		once sync.Once
@@ -16,7 +16,22 @@ func Do[T any](fn func() T) func() T {
 	}
 }
 
-// DoWithParam 单列带参数模式 泛型函数
+// DoWithErr 单例模式, 返回泛型和错误
+func DoWithErr[T any](fn func() (T, error)) func() (T, error) {
+	var (
+		once sync.Once
+		s    T
+		err  error
+	)
+	return func() (T, error) {
+		once.Do(func() {
+			s, err = fn()
+		})
+		return s, err
+	}
+}
+
+// DoWithParam 单例带参数模式 泛型函数
 func DoWithParam[T any, P any](fn func(P) T) func(P) T {
 	var (
 		once sync.Once
