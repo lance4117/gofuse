@@ -1,4 +1,4 @@
-package fxcache
+package fscache
 
 import (
 	"testing"

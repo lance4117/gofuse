@@ -1,4 +1,4 @@
-package fxhttp
+package fshttp
 
 import (
 	"testing"

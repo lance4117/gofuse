@@ -1,4 +1,4 @@
-package fxerror
+package fserror
 
 import (
 	"errors"
@@ -6,7 +6,7 @@ import (
 
 var (
 	ErrNil         = errors.New("error nil")
-	ErrConfigRead  = errors.New("error reading fxconfig")
-	ErrConfigLoad  = errors.New("error loading fxconfig")
+	ErrConfigRead  = errors.New("error reading fsconfig")
+	ErrConfigLoad  = errors.New("error loading fsconfig")
 	ErrNeedPointer = errors.New("error must be pointer")
 )

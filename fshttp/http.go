@@ -1,7 +1,7 @@
-package fxhttp
+package fshttp
 
 import (
-	"gofuse/fxlogger"
+	"gofuse/fslogger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,15 +32,15 @@ func (e *Engine) Run(addr ...string) {
 	var path string
 	// 默认本地8080
 	if len(addr) == 0 {
-		fxlogger.Info("HTTP Service run at Default")
+		fslogger.Info("HTTP Service run at Default")
 		path = "127.0.0.1:8080"
 	} else {
 		path = addr[0]
 	}
-	fxlogger.Info("HTTP Service start at ", path)
+	fslogger.Info("HTTP Service start at ", path)
 	err := e.Engine.Run(path)
 	if err != nil {
-		fxlogger.Fatal("Engine Run Fail")
+		fslogger.Fatal("Engine Run Fail")
 		return
 	}
 }

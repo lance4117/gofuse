@@ -1,4 +1,4 @@
-package fxonce
+package fsonce
 
 import "sync"
 

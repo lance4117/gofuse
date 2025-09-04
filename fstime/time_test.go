@@ -1,4 +1,4 @@
-package fxtime
+package fstime
 
 import (
 	"testing"

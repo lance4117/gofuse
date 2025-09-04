@@ -1,4 +1,4 @@
-package fxhttp
+package fshttp
 
 const (
 	StatusContinue           = 100 // RFC 9110, 15.2.1

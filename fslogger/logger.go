@@ -1,4 +1,4 @@
-package fxlogger
+package fslogger
 
 import (
 	"log"

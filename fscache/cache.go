@@ -1,7 +1,7 @@
-package fxcache
+package fscache
 
 import (
-	"gofuse/fxerror"
+	"gofuse/fserror"
 	"reflect"
 	"time"
 
@@ -31,7 +31,7 @@ func (i *Cache) Set(key string, value any) error {
 func (i *Cache) Get(key string, v interface{}) error {
 	// 检查 v 是否为指针类型
 	if reflect.TypeOf(v).Kind() != reflect.Ptr {
-		return fxerror.ErrNeedPointer
+		return fserror.ErrNeedPointer
 	}
 	bytes, err := i.BigCache.Get(key)
 	if err != nil {
