@@ -70,7 +70,7 @@ GoFuse/
 ### 克隆项目
 
 ```bash
-git clone git@gitee.com:entroplex4117/GoFuse.git
+git clone git@gitee.com:lance4117/GoFuse.git
 cd GoFuse
 ```
 
