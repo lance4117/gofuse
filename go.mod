@@ -1,4 +1,4 @@
-module gofuse
+module  gitee.com/lance4117/GoFuse
 
 go 1.24.3
 
