@@ -12,7 +12,7 @@ var cfg *viper.Viper
 
 var InitConfig = fxonce.DoWithParam(func(path string) struct{} {
 	if path == "" {
-		path = "./fxconfig.yaml"
+		path = "./config.yaml"
 	}
 	cfg = viper.New()
 	cfg.SetConfigFile(path)
