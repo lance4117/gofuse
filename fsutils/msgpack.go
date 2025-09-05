@@ -1,19 +1,18 @@
 package fsutils
 
 import (
-	"gitee.com/lance4117/GoFuse/fserror"
 	"github.com/vmihailenco/msgpack/v5"
 )
 
-func AnyToBytes(value any) ([]byte, error) {
-	if value == nil {
-		return nil, fserror.ErrNil
-	}
+func MarshalAny(value any) ([]byte, error) {
 	return msgpack.Marshal(value)
 }
 
-func BytesToAny[T any](bytes []byte) (T, error) {
+func UnmarshalTo[T any](bytes []byte) (T, error) {
 	var value T
+	if len(bytes) == 0 {
+		return value, nil
+	}
 	err := msgpack.Unmarshal(bytes, &value)
 	return value, err
 }
