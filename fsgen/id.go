@@ -1,4 +1,4 @@
-package fsid
+package fsgen
 
 import (
 	"gitee.com/lance4117/GoFuse/fsonce"
@@ -9,7 +9,7 @@ var getDefault = fsonce.DoWithErr(func() (*sf.Sonyflake, error) {
 	return sf.New(sf.Settings{})
 })
 
-// NewId 生成一个新的唯一ID
+// NewId 生成一个新的雪花ID
 func NewId() (int64, error) {
 	snowflake, err := getDefault()
 	if err != nil {

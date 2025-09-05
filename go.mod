@@ -4,6 +4,7 @@ go 1.24.3
 
 require (
 	github.com/allegro/bigcache v1.2.1
+	github.com/brianvoe/gofakeit/v7 v7.5.1
 	github.com/cosmos/cosmos-sdk v0.50.14
 	github.com/gin-gonic/gin v1.10.1
 	github.com/ignite/cli/v28 v28.11.0
