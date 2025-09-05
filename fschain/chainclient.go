@@ -2,6 +2,7 @@ package fschain
 
 import (
 	goctx "context"
+	"strings"
 
 	"gitee.com/lance4117/GoFuse/fslogger"
 	"gitee.com/lance4117/GoFuse/fsonce"
@@ -40,21 +41,22 @@ var InitClient = fsonce.DoWithParam(func(option []cosmosclient.Option) *Client {
 	return &Client{&client}
 })
 
-func (c *Client) Account(nameOrAddress string) (cosmosaccount.Account, error) {
-	return c.CosmosClient.Account(nameOrAddress)
-}
-
-func (c *Client) Address(name string) (string, error) {
-	return c.CosmosClient.Address(name)
-}
-
-func (c *Client) BroadcastTx(ctx goctx.Context, nameOrAddress string, msgs ...sdktypes.Msg) (*cosmosclient.Response, error) {
-	account, err := c.Account(nameOrAddress)
+func (c *Client) AccountAndAddress(address string) (*cosmosaccount.Account, string, error) {
+	account, err := c.CosmosClient.Account(address)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
+	var prefix string
+	pos := strings.Index(address, "1")
+	if pos <= 0 {
+		prefix = ""
+	} else {
+		prefix = address[:pos]
+	}
+	addr, err := account.Address(prefix)
+	return &account, addr, err
+}
 
-	tx, err := c.CosmosClient.BroadcastTx(ctx, account, msgs...)
-
-	return &tx, err
+func (c *Client) BroadcastTx(ctx goctx.Context, account *cosmosaccount.Account, msgs ...sdktypes.Msg) (cosmosclient.Response, error) {
+	return c.CosmosClient.BroadcastTx(ctx, *account, msgs...)
 }
