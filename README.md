@@ -18,8 +18,6 @@
 
 ---
 
----
-
 ## 📦 核心模块
 
 ### fshttp - HTTP 服务封装
@@ -44,7 +42,7 @@
 
 ---
 
-## 🛠️ 技术栈
+## 🛠️ 主要技术栈
 
 - [Gin](https://github.com/gin-gonic/gin) - HTTP 框架
 - [Viper](https://github.com/spf13/viper) - 配置解决方案
@@ -52,4 +50,3 @@
 - [BigCache](https://github.com/allegro/bigcache) - 高性能缓存
 - [Sonyflake](https://github.com/sony/sonyflake) - 分布式ID生成器
 
----
