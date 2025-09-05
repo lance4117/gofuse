@@ -1,8 +1,7 @@
 package fshttp
 
 import (
-	"gofuse/fslogger"
-
+	"gitee.com/lance4117/GoFuse/fslogger"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,10 +1,9 @@
 package fsconfig
 
 import (
-	"gofuse/fserror"
-	"gofuse/fslogger"
-	"gofuse/fsonce"
-
+	"gitee.com/lance4117/GoFuse/fserror"
+	"gitee.com/lance4117/GoFuse/fslogger"
+	"gitee.com/lance4117/GoFuse/fsonce"
 	"github.com/spf13/viper"
 )
 

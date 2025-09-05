@@ -1,10 +1,10 @@
 package fscache
 
 import (
-	"gofuse/fserror"
 	"reflect"
 	"time"
 
+	"gitee.com/lance4117/GoFuse/fserror"
 	"github.com/allegro/bigcache"
 	"github.com/vmihailenco/msgpack/v5"
 )

@@ -1,8 +1,7 @@
 package fsid
 
 import (
-	"gofuse/fsonce"
-
+	"gitee.com/lance4117/GoFuse/fsonce"
 	sf "github.com/sony/sonyflake/v2"
 )
 

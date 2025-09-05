@@ -1,9 +1,10 @@
 package test
 
 import (
-	"gofuse/fsconfig"
-	"gofuse/fslogger"
 	"testing"
+
+	"gitee.com/lance4117/GoFuse/fsconfig"
+	"gitee.com/lance4117/GoFuse/fslogger"
 )
 
 func TestGetConfig(t *testing.T) {
