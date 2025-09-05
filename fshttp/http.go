@@ -41,7 +41,7 @@ func (e *Engine) Run(addr ...string) {
 	fslogger.Info("HTTP Service start at ", path)
 	err := e.Engine.Run(path)
 	if err != nil {
-		fslogger.Fatal("Engine Run Fail")
+		fslogger.Fatal(err, "Engine Run Fail")
 		return
 	}
 }
