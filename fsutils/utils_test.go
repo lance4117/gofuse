@@ -18,6 +18,13 @@ func TestBytes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	t.Log(user)
+
+	var usertest User
+	err = UnmarshalAny(bytes, &usertest)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(usertest)
 }

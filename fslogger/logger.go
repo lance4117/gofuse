@@ -24,26 +24,32 @@ func init() {
 	})
 }
 
+// Info 记录INFO级别的日志信息
 func Info(args ...interface{}) {
 	sugaredLogger.Info(args...)
 }
 
+// Debug 记录DEBUG级别的日志信息
 func Debug(args ...interface{}) {
 	sugaredLogger.Debug(args...)
 }
 
+// Warn 记录WARN级别的日志信息
 func Warn(args ...interface{}) {
 	sugaredLogger.Warn(args...)
 }
 
+// Error 记录ERROR级别的日志信息
 func Error(args ...interface{}) {
 	sugaredLogger.Error(args...)
 }
 
+// Panic 记录PANIC级别的日志信息并引发panic
 func Panic(args ...interface{}) {
 	sugaredLogger.Panic(args...)
 }
 
+// Fatal 记录FATAL级别的日志信息并退出程序
 func Fatal(args ...interface{}) {
 	sugaredLogger.Fatal(args...)
 }

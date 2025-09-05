@@ -9,6 +9,7 @@ type Engine struct {
 	*gin.Engine
 }
 
+// InitServer 初始化HTTP服务器引擎
 func InitServer(isDebug bool) *Engine {
 	// 颜色
 	gin.ForceConsoleColor()
@@ -27,6 +28,7 @@ func InitServer(isDebug bool) *Engine {
 	return &Engine{engine}
 }
 
+// Run 启动HTTP服务器
 func (e *Engine) Run(addr ...string) {
 	var path string
 	// 默认本地8080
@@ -44,14 +46,17 @@ func (e *Engine) Run(addr ...string) {
 	}
 }
 
+// POST 注册POST请求处理函数
 func (e *Engine) POST(path string, handles ...ContextHandler) {
 	e.Engine.POST(path, convertHandler(handles...)...)
 }
 
+// GET 注册GET请求处理函数
 func (e *Engine) GET(path string, handles ...ContextHandler) {
 	e.Engine.GET(path, convertHandler(handles...)...)
 }
 
+// Use 注册中间件处理函数
 func (e *Engine) Use(handles ...ContextHandler) {
 	e.Engine.Use(convertHandler(handles...)...)
 }

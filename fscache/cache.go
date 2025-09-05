@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"gitee.com/lance4117/GoFuse/fserror"
+	"gitee.com/lance4117/GoFuse/fsutils"
 	"github.com/allegro/bigcache"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 type Cache struct {
@@ -19,8 +19,9 @@ func NewCache(expTime time.Duration) (*Cache, error) {
 	return &Cache{cache}, err
 }
 
+// Set 将指定的key存储到缓存中
 func (i *Cache) Set(key string, value any) error {
-	marshal, err := msgpack.Marshal(value)
+	marshal, err := fsutils.MarshalAny(value)
 	if err != nil {
 		return err
 	}
@@ -28,7 +29,7 @@ func (i *Cache) Set(key string, value any) error {
 }
 
 // Get 传入key 和 v指针，返回相应类型
-func (i *Cache) Get(key string, v interface{}) error {
+func (i *Cache) Get(key string, v any) error {
 	// 检查 v 是否为指针类型
 	if reflect.TypeOf(v).Kind() != reflect.Ptr {
 		return fserror.ErrNeedPointer
@@ -37,7 +38,7 @@ func (i *Cache) Get(key string, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	return msgpack.Unmarshal(bytes, v)
+	return fsutils.UnmarshalAny(bytes, v)
 }
 
 // Delete 删除
