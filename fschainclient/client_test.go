@@ -5,16 +5,16 @@ import (
 )
 
 func TestInitClient(t *testing.T) {
-	adapter := InitCosmosClient(DefaultAddress)
+	adapter := InitClient(DefaultOptions)
 
 	// Get account from the keyring
 	// 需要提前存储到keyring： gaiad keys add user
-	account, err := adapter.Client.Account("cosmos1q3dllmcgcx0x3a5y68pytma2zcjqt2ud69c79c")
+	account, err := adapter.Client.Account("cosmos15sya5v5hzmx37xuaw6jx2rl2gnla6z3j8v93mr")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	addr, err := adapter.Client.Address("cosmos1q3dllmcgcx0x3a5y68pytma2zcjqt2ud69c79c")
+	addr, err := adapter.Client.Address("cosmos15sya5v5hzmx37xuaw6jx2rl2gnla6z3j8v93mr")
 	if err != nil {
 		t.Fatal(err)
 	}
