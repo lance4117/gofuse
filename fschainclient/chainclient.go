@@ -15,16 +15,17 @@ const (
 )
 
 type ClientAdapter struct {
-	client *cosmosclient.Client
+	Client *cosmosclient.Client
 }
 
+// InitCosmosClient 获取Cosmos前缀的cosmos区块链客户端
 var InitCosmosClient = fsonce.DoWithParam(func(address string) *ClientAdapter {
 	ctx := context.Background()
 	// Create a Cosmos client instance
 	client, err := cosmosclient.New(ctx, cosmosclient.WithAddressPrefix(addressPrefix),
 		cosmosclient.WithNodeAddress(address))
 	if err != nil {
-		fslogger.Fatal(err, "InitCosmosClient ClientAdapter ERROR")
+		fslogger.Fatal(err, "Init Client Adapter ERROR")
 		return nil
 	}
 	return &ClientAdapter{&client}
