@@ -15,7 +15,12 @@ var (
 // Init 初始化日志记录器
 func init() {
 	once.Do(func() {
-		logger, err := zap.NewDevelopment()
+		logger, err := zap.NewDevelopment(
+			// 调用栈深度
+			zap.AddCaller(),
+			// 跳过封装的一层
+			zap.AddCallerSkip(1),
+		)
 		if err != nil {
 			log.Fatal(err, "Init Logger")
 			return
