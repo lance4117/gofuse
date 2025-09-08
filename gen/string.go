@@ -1,4 +1,4 @@
-package fsgen
+package gen
 
 import (
 	"strings"

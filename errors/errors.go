@@ -1,4 +1,4 @@
-package fserror
+package errors
 
 import (
 	"errors"

@@ -1,4 +1,4 @@
-package fsutils
+package utils
 
 import (
 	"github.com/vmihailenco/msgpack/v5"

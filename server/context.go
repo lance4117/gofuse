@@ -1,4 +1,4 @@
-package fshttp
+package server
 
 import (
 	"net/http"

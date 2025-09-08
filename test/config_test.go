@@ -3,14 +3,14 @@ package test
 import (
 	"testing"
 
-	"gitee.com/lance4117/GoFuse/fsconfig"
-	"gitee.com/lance4117/GoFuse/fslogger"
+	"gitee.com/lance4117/GoFuse/config"
+	"gitee.com/lance4117/GoFuse/logger"
 )
 
 func TestGetConfig(t *testing.T) {
-	fsconfig.InitConfig("")
+	config.InitConfig("")
 
-	fslogger.Info(fsconfig.All())
+	logger.Info(config.All())
 
-	fslogger.Info(fsconfig.GetString("app.name"))
+	logger.Info(config.GetString("app.name"))
 }

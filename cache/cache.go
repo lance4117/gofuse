@@ -1,11 +1,11 @@
-package fscache
+package cache
 
 import (
 	"reflect"
 	"time"
 
-	"gitee.com/lance4117/GoFuse/fserror"
-	"gitee.com/lance4117/GoFuse/fsutils"
+	"gitee.com/lance4117/GoFuse/errors"
+	"gitee.com/lance4117/GoFuse/utils"
 	"github.com/allegro/bigcache"
 )
 
@@ -21,7 +21,7 @@ func NewCache(expTime time.Duration) (*Cache, error) {
 
 // Set 将指定的key存储到缓存中
 func (i *Cache) Set(key string, value any) error {
-	marshal, err := fsutils.MarshalAny(value)
+	marshal, err := utils.MarshalAny(value)
 	if err != nil {
 		return err
 	}
@@ -32,13 +32,13 @@ func (i *Cache) Set(key string, value any) error {
 func (i *Cache) Get(key string, v any) error {
 	// 检查 v 是否为指针类型
 	if reflect.TypeOf(v).Kind() != reflect.Ptr {
-		return fserror.ErrNeedPointer
+		return errors.ErrNeedPointer
 	}
 	bytes, err := i.BigCache.Get(key)
 	if err != nil {
 		return err
 	}
-	return fsutils.UnmarshalAny(bytes, v)
+	return utils.UnmarshalAny(bytes, v)
 }
 
 // Delete 删除

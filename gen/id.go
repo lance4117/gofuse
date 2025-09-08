@@ -1,11 +1,11 @@
-package fsgen
+package gen
 
 import (
-	"gitee.com/lance4117/GoFuse/fsonce"
+	"gitee.com/lance4117/GoFuse/once"
 	sf "github.com/sony/sonyflake/v2"
 )
 
-var getDefault = fsonce.DoWithErr(func() (*sf.Sonyflake, error) {
+var getDefault = once.DoWithErr(func() (*sf.Sonyflake, error) {
 	return sf.New(sf.Settings{})
 })
 

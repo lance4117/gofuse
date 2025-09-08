@@ -1,4 +1,4 @@
-package fsutils
+package utils
 
 import "testing"
 

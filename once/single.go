@@ -1,4 +1,4 @@
-package fsonce
+package once
 
 import "sync"
 

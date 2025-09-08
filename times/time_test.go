@@ -1,4 +1,4 @@
-package fstime
+package times
 
 import (
 	"testing"

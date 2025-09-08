@@ -1,4 +1,4 @@
-package fslogger
+package logger
 
 import (
 	"testing"

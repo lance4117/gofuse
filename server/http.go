@@ -1,7 +1,7 @@
-package fshttp
+package server
 
 import (
-	"gitee.com/lance4117/GoFuse/fslogger"
+	"gitee.com/lance4117/GoFuse/logger"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,15 +33,15 @@ func (e *Engine) Run(addr ...string) {
 	var path string
 	// 默认本地8080
 	if len(addr) == 0 {
-		fslogger.Info("HTTP Service run at Default")
+		logger.Info("HTTP Service run at Default")
 		path = "127.0.0.1:8080"
 	} else {
 		path = addr[0]
 	}
-	fslogger.Info("HTTP Service start at ", path)
+	logger.Info("HTTP Service start at ", path)
 	err := e.Engine.Run(path)
 	if err != nil {
-		fslogger.Fatal(err, "Engine Run Fail")
+		logger.Fatal(err, "Engine Run Fail")
 		return
 	}
 }

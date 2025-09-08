@@ -1,4 +1,4 @@
-package fschain
+package chain
 
 import (
 	"testing"

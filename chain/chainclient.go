@@ -1,10 +1,10 @@
-package fschain
+package chain
 
 import (
 	goctx "context"
 
-	"gitee.com/lance4117/GoFuse/fslogger"
-	"gitee.com/lance4117/GoFuse/fsonce"
+	"gitee.com/lance4117/GoFuse/logger"
+	"gitee.com/lance4117/GoFuse/once"
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosaccount"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
@@ -29,12 +29,12 @@ type Client struct {
 }
 
 // InitClient 获取cosmos区块链客户端
-var InitClient = fsonce.DoWithParam(func(option []cosmosclient.Option) *Client {
+var InitClient = once.DoWithParam(func(option []cosmosclient.Option) *Client {
 	ctx := goctx.Background()
 	// Create a Cosmos client instance
 	client, err := cosmosclient.New(ctx, option...)
 	if err != nil {
-		fslogger.Fatal(err, "Init Cosmos Client Fail")
+		logger.Fatal(err, "Init Cosmos Client Fail")
 		return nil
 	}
 	return &Client{&client}
