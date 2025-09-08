@@ -17,6 +17,8 @@
 - 🔗 区块链客户端支持
 - 📦 内置缓存、日志、配置、时间、ID生成等常用工具模块
 - 🎨 数据生成工具（文章生成等）
+- 📊 进程监控工具
+- 🏊 工作池（协程池）支持
 
 ---
 
@@ -62,6 +64,14 @@
 
 提供cosmos区块链客户端支持。
 
+### monitor - 进程监控
+
+提供进程监控功能，可以监控指定进程的CPU、内存、IO等指标，并将结果导出为CSV文件。
+
+### pool - 工作池
+
+基于ants实现的工作池（协程池）封装，支持并发任务执行和结果收集。
+
 ---
 
 ## 🛠️ 主要技术栈
@@ -73,6 +83,8 @@
 - [Sonyflake](https://github.com/sony/sonyflake) - 分布式ID生成器
 - [Msgpack](https://github.com/vmihailenco/msgpack) - 高性能序列化库
 - [Gofakeit](https://github.com/brianvoe/gofakeit) - 随机数据生成器
+- [Ants](https://github.com/panjf2000/ants) - 高性能 goroutine 池
+- [Gopsutil](https://github.com/shirou/gopsutil) - 系统监控库
 
 ---
 
