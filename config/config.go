@@ -1,7 +1,7 @@
 package config
 
 import (
-	"gitee.com/lance4117/GoFuse/errors"
+	"gitee.com/lance4117/GoFuse/errs"
 	"gitee.com/lance4117/GoFuse/logger"
 	"gitee.com/lance4117/GoFuse/once"
 	"github.com/spf13/viper"
@@ -16,7 +16,7 @@ var InitConfig = once.DoWithParam(func(path string) struct{} {
 	cfg = viper.New()
 	cfg.SetConfigFile(path)
 	if err := cfg.ReadInConfig(); err != nil {
-		logger.Panic(errors.ErrConfigRead, err)
+		logger.Panic(errs.ErrConfigRead, err)
 	}
 	return struct{}{}
 })
@@ -24,8 +24,8 @@ var InitConfig = once.DoWithParam(func(path string) struct{} {
 // LoadKey 通过key获取配置结构体
 func LoadKey(key string, configStru interface{}) error {
 	if cfg == nil {
-		logger.Error(errors.ErrConfigLoad, configStru)
-		return errors.ErrConfigLoad
+		logger.Error(errs.ErrConfigLoad, configStru)
+		return errs.ErrConfigLoad
 	}
 	if err := cfg.UnmarshalKey(key, configStru); err != nil {
 		return err
@@ -36,7 +36,7 @@ func LoadKey(key string, configStru interface{}) error {
 // GetString 通过key访问配置
 func GetString(key string) string {
 	if cfg == nil {
-		logger.Error(errors.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigLoad, key)
 		return ""
 	}
 	return cfg.GetString(key)
@@ -45,7 +45,7 @@ func GetString(key string) string {
 // GetInt 通过key访问配置
 func GetInt(key string) int {
 	if cfg == nil {
-		logger.Error(errors.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigLoad, key)
 		return 0
 	}
 	return cfg.GetInt(key)
@@ -54,7 +54,7 @@ func GetInt(key string) int {
 // GetBool 通过key访问配置
 func GetBool(key string) bool {
 	if cfg == nil {
-		logger.Error(errors.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigLoad, key)
 		return false
 	}
 	return cfg.GetBool(key)

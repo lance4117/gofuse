@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"time"
 
-	"gitee.com/lance4117/GoFuse/errors"
+	"gitee.com/lance4117/GoFuse/errs"
 	"gitee.com/lance4117/GoFuse/utils"
 	"github.com/allegro/bigcache"
 )
@@ -32,7 +32,7 @@ func (i *Cache) Set(key string, value any) error {
 func (i *Cache) Get(key string, v any) error {
 	// 检查 v 是否为指针类型
 	if reflect.TypeOf(v).Kind() != reflect.Ptr {
-		return errors.ErrNeedPointer
+		return errs.ErrNeedPointer
 	}
 	bytes, err := i.BigCache.Get(key)
 	if err != nil {
