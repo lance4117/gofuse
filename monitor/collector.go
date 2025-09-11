@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/v4/disk"
+	"github.com/shirou/gopsutil/v4/net"
 	"github.com/shirou/gopsutil/v4/process"
 )
 
@@ -114,5 +115,45 @@ func (d *DiskCollector) Collect(_ *process.Process, _ time.Time) ([]string, erro
 		fmt.Sprintf("%d", usage.Used/1024/1024),
 		fmt.Sprintf("%d", usage.Free/1024/1024),
 		fmt.Sprintf("%.2f", usage.UsedPercent),
+	}, nil
+}
+
+// NetCollector 网络信息采集器
+type NetCollector struct {
+	prevRecv, prevSent uint64
+	prevTS             time.Time
+}
+
+// NewNetCollector 初始化网络采集器
+func NewNetCollector() *NetCollector {
+	return &NetCollector{}
+}
+
+func (c *NetCollector) Names() []string {
+	return []string{"NetRecv(KB/s)", "NetSent(KB/s)"}
+}
+
+func (c *NetCollector) Collect(_ *process.Process, now time.Time) ([]string, error) {
+	io, err := net.IOCounters(false)
+	if err != nil || len(io) == 0 {
+		return []string{"0", "0"}, nil
+	}
+	recv := io[0].BytesRecv / 1024
+	sent := io[0].BytesSent / 1024
+
+	var recvRate, sentRate uint64
+	if !c.prevTS.IsZero() {
+		delta := now.Sub(c.prevTS).Seconds()
+		if delta > 1e-9 {
+			recvRate = (recv - c.prevRecv) / uint64(delta)
+			sentRate = (sent - c.prevSent) / uint64(delta)
+		}
+	}
+	c.prevRecv, c.prevSent = recv, sent
+	c.prevTS = now
+
+	return []string{
+		fmt.Sprintf("%d", recvRate),
+		fmt.Sprintf("%d", sentRate),
 	}, nil
 }

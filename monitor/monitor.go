@@ -1,9 +1,11 @@
 package monitor
 
 import (
+	"fmt"
 	"time"
 
 	"gitee.com/lance4117/GoFuse/logger"
+	"gitee.com/lance4117/GoFuse/times"
 	"gitee.com/lance4117/GoFuse/writer"
 	"github.com/shirou/gopsutil/v4/process"
 )
@@ -34,8 +36,8 @@ func NewDefaultMonitor(pid int, path string) *Monitor {
 		pid:        pid,
 		interval:   time.Second,
 		duration:   time.Minute,
-		collectors: []Collector{NewCPUCollector(), NewMemoryCollector(), NewIOCollector(), NewDiskCollector(path)},
-		writer:     writer.NewCSVWriter(writer.DefaultCSVFileName),
+		collectors: []Collector{NewCPUCollector(), NewMemoryCollector(), NewIOCollector(), NewDiskCollector(path), NewNetCollector()},
+		writer:     writer.NewCSVWriter(fmt.Sprintf("monitor-%d", times.NowMilli())),
 	}
 }
 
