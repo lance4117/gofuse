@@ -28,8 +28,8 @@ type Client struct {
 	CosmosClient *cosmosclient.Client
 }
 
-// InitClient 获取cosmos区块链客户端
-var InitClient = once.DoWithParam(func(option []cosmosclient.Option) *Client {
+// InitClientOnce 单例获取cosmos区块链客户端
+var InitClientOnce = once.DoWithParam(func(option []cosmosclient.Option) *Client {
 	ctx := goctx.Background()
 	// Create a Cosmos client instance
 	client, err := cosmosclient.New(ctx, option...)
@@ -39,6 +39,19 @@ var InitClient = once.DoWithParam(func(option []cosmosclient.Option) *Client {
 	}
 	return &Client{&client}
 })
+
+// InitClient 获取cosmos区块链客户端
+func InitClient(option []cosmosclient.Option) *Client {
+	ctx := goctx.Background()
+	// Create a Cosmos client instance
+	client, err := cosmosclient.New(ctx, option...)
+
+	if err != nil {
+		logger.Fatal(err, "Init Cosmos Client Fail")
+		return nil
+	}
+	return &Client{&client}
+}
 
 func (c *Client) Account(nameOrAddress string) (*cosmosaccount.Account, error) {
 	account, err := c.CosmosClient.Account(nameOrAddress)
