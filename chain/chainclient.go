@@ -86,10 +86,17 @@ func (c *Client) DoBroadcastTxWithOptions(ctx context.Context, options cosmoscli
 	return tx.Broadcast(ctx)
 }
 
+// BankBalance retrieves the balance of the client's account
+// ctx: the context for the operation
+// pagination: pagination parameters for the query
+// returns: the coins in the account and any error that occurred
 func (c *Client) BankBalance(ctx context.Context, pagination *query.PageRequest) (sdk.Coins, error) {
 	return c.CosmosClient.BankBalances(ctx, c.Address, pagination)
 }
 
+// Status retrieves the status of the Cosmos node
+// ctx: the context for the operation
+// returns: the status result and any error that occurred
 func (c *Client) Status(ctx context.Context) (*ctypes.ResultStatus, error) {
 	return c.CosmosClient.Status(ctx)
 }
