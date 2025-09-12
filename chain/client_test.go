@@ -5,11 +5,9 @@ import (
 )
 
 func TestInitClient(t *testing.T) {
-	adapter := InitClient(DefaultOptions)
-
-	// Get account from the keyring
-	// 需要提前存储到keyring： gaiad keys add user
-	acc, err := adapter.Account("cosmos1rdx27mfxehx4z45wvw0c7d6hyn78gshu065420")
-
-	t.Log(acc, err)
+	client := InitClient("cosmos1rdx27mfxehx4z45wvw0c7d6hyn78gshu065420", DefaultOptions)
+	if client == nil {
+		return
+	}
+	t.Log(client.Account)
 }
