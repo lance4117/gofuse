@@ -1,4 +1,3 @@
-// Package chain provides a client for interacting with Cosmos blockchain
 package chain
 
 import (
@@ -15,12 +14,9 @@ import (
 )
 
 const (
-	// DefaultAddressPrefix is the default address prefix for Cosmos addresses
 	DefaultAddressPrefix = "cosmos"
-	// DefaultAddress is the default node address for the Cosmos client
-	DefaultAddress = "http://localhost:26657"
-	// DefaultKeyring is the default keyring backend for the Cosmos client
-	DefaultKeyring = "test"
+	DefaultAddress       = "http://localhost:26657"
+	DefaultKeyring       = "test"
 )
 
 var (
@@ -32,17 +28,17 @@ var (
 	}
 )
 
-// Client is a wrapper around the Cosmos client with account information
+// Client 基于账号的Cosmos客户端
 type Client struct {
 	CosmosClient *cosmosclient.Client
 	Address      string
 	Account      *cosmosaccount.Account
 }
 
-// InitClient 获取cosmos区块链客户端
-// address: the address of the account to use
-// option: client options for connecting to the Cosmos node
-// returns: a new Client instance
+// InitClient 初始化Cosmos区块链客户端
+// address: 要使用的账户地址
+// option: 连接到Cosmos节点的客户端选项
+// returns: 新的Client实例
 func InitClient(address string, option []cosmosclient.Option) *Client {
 	ctx := goctx.Background()
 	// Create a Cosmos client instance
@@ -61,19 +57,19 @@ func InitClient(address string, option []cosmosclient.Option) *Client {
 	return &Client{&client, address, &acc}
 }
 
-// DoBroadcastTx broadcasts a transaction with the given messages
-// ctx: the context for the operation
-// msgs: the messages to include in the transaction
-// returns: the response from broadcasting the transaction and any error that occurred
+// DoBroadcastTx 广播包含给定消息的交易
+// ctx: 操作的上下文
+// msgs: 包含在交易中的消息
+// returns: 广播交易的响应和发生的任何错误
 func (c *Client) DoBroadcastTx(ctx context.Context, msgs ...sdktypes.Msg) (cosmosclient.Response, error) {
 	return c.CosmosClient.BroadcastTx(ctx, *c.Account, msgs...)
 }
 
-// DoBroadcastTxWithOptions broadcasts a transaction with custom options
-// ctx: the context for the operation
-// options: custom transaction options
-// msgs: the messages to include in the transaction
-// returns: the response from broadcasting the transaction and any error that occurred
+// DoBroadcastTxWithOptions 使用自定义选项广播交易
+// ctx: 操作的上下文
+// options: 自定义交易选项
+// msgs: 包含在交易中的消息
+// returns: 广播交易的响应和发生的任何错误
 func (c *Client) DoBroadcastTxWithOptions(ctx context.Context, options cosmosclient.TxOptions, msgs ...sdktypes.Msg) (cosmosclient.Response, error) {
 	// Create a transaction with the given options
 	tx, err := c.CosmosClient.CreateTxWithOptions(ctx, *c.Account,
@@ -86,17 +82,17 @@ func (c *Client) DoBroadcastTxWithOptions(ctx context.Context, options cosmoscli
 	return tx.Broadcast(ctx)
 }
 
-// BankBalance retrieves the balance of the client's account
-// ctx: the context for the operation
-// pagination: pagination parameters for the query
-// returns: the coins in the account and any error that occurred
+// BankBalance 查询客户端账户的余额
+// ctx: 操作的上下文
+// pagination: 查询的分页参数
+// returns: 账户中的代币和发生的任何错误
 func (c *Client) BankBalance(ctx context.Context, pagination *query.PageRequest) (sdk.Coins, error) {
 	return c.CosmosClient.BankBalances(ctx, c.Address, pagination)
 }
 
-// Status retrieves the status of the Cosmos node
-// ctx: the context for the operation
-// returns: the status result and any error that occurred
+// Status 查询Cosmos节点的状态
+// ctx: 操作的上下文
+// returns: 状态结果和发生的任何错误
 func (c *Client) Status(ctx context.Context) (*ctypes.ResultStatus, error) {
 	return c.CosmosClient.Status(ctx)
 }
