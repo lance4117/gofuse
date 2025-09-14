@@ -1,7 +1,7 @@
 package chain
 
 import (
-	goctx "context"
+	"context"
 
 	"gitee.com/lance4117/GoFuse/logger"
 	ctypes "github.com/cometbft/cometbft/rpc/core/types"
@@ -10,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosaccount"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
-	"golang.org/x/net/context"
 )
 
 const (
@@ -40,7 +39,7 @@ type Client struct {
 // option: 连接到Cosmos节点的客户端选项
 // returns: 新的Client实例
 func InitClient(address string, option []cosmosclient.Option) *Client {
-	ctx := goctx.Background()
+	ctx := context.Background()
 	// Create a Cosmos client instance
 	client, err := cosmosclient.New(ctx, option...)
 
