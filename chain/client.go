@@ -15,7 +15,6 @@ import (
 const (
 	DefaultAddressPrefix = "cosmos"
 	DefaultAddress       = "http://localhost:26657"
-	DefaultKeyring       = "test"
 )
 
 var (
@@ -23,7 +22,6 @@ var (
 	DefaultOptions = []cosmosclient.Option{
 		cosmosclient.WithAddressPrefix(DefaultAddressPrefix),
 		cosmosclient.WithNodeAddress(DefaultAddress),
-		cosmosclient.WithKeyringBackend(DefaultKeyring),
 	}
 )
 
@@ -49,7 +47,7 @@ func InitClient(address string, option []cosmosclient.Option) *Client {
 	}
 	acc, err := client.Account(address)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Fatal(err, address)
 	}
 	logger.Infof("Init Blog Client %s success", address)
 
