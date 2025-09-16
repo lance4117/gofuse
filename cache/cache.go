@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"gitee.com/lance4117/GoFuse/errs"
-	"gitee.com/lance4117/GoFuse/utils"
+	"gitee.com/lance4117/GoFuse/tools"
 	"github.com/allegro/bigcache"
 )
 
@@ -21,7 +21,7 @@ func NewCache(expTime time.Duration) (*Cache, error) {
 
 // Set 将指定的key存储到缓存中
 func (i *Cache) Set(key string, value any) error {
-	marshal, err := utils.MarshalAny(value)
+	marshal, err := tools.MarshalAny(value)
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func (i *Cache) Get(key string, v any) error {
 	if err != nil {
 		return err
 	}
-	return utils.UnmarshalAny(bytes, v)
+	return tools.UnmarshalAny(bytes, v)
 }
 
 // Delete 删除

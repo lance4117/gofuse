@@ -1,4 +1,4 @@
-package utils
+package tools
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 // ExactCmd 执行一个外部命令
 // 注意，这里的arg必须要分开
 // 这里并不会像 shell 那样帮你解析一整条字符串
-func ExactCmd(name string, arg ...string) error {
+func ExactCmd(name string, arg ...string) ([]byte, error) {
 	var out bytes.Buffer
 
 	cmd := exec.Command(name, arg...)
@@ -20,7 +20,7 @@ func ExactCmd(name string, arg ...string) error {
 
 	err := cmd.Run()
 	if err != nil {
-		return errors.New(out.String())
+		return nil, errors.New(out.String())
 	}
-	return nil
+	return out.Bytes(), nil
 }
