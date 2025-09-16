@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	DefaultHDPath = "m/44’/118’/0/0/0"
+	DefaultHDPath = "m/44'/118'/0/0/0"
 )
 
 // KeyRing 包含区块链账户的密钥信息
@@ -40,6 +40,7 @@ func NewKey(prefix, hdPath string) (KeyRing, error) {
 	if err != nil {
 		return KeyRing{}, err
 	}
+
 	// 根据助记词和HD路径生成私钥
 	pBytes, err := hd.Secp256k1.Derive()(mnemonic, "", hdPath)
 	if err != nil {
