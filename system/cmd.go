@@ -1,4 +1,4 @@
-package tools
+package system
 
 import (
 	"bytes"
@@ -6,10 +6,10 @@ import (
 	"os/exec"
 )
 
-// ExactCmd 执行一个外部命令
+// Exact 执行一个外部命令
 // 注意，这里的arg必须要分开
 // 这里并不会像 shell 那样帮你解析一整条字符串
-func ExactCmd(name string, arg ...string) ([]byte, error) {
+func Exact(name string, arg ...string) ([]byte, error) {
 	var out bytes.Buffer
 
 	cmd := exec.Command(name, arg...)
