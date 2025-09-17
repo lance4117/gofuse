@@ -1,4 +1,4 @@
-package writer
+package fileio
 
 import (
 	"fmt"
@@ -8,8 +8,8 @@ import (
 )
 
 func TestCSV(t *testing.T) {
-	csv := NewCSVWriter(fmt.Sprintf("test-%d", times.NowMilli()))
-	err := csv.Init([]string{"1", "2"})
+	csv := NewCSVFileIO(fmt.Sprintf("test-%d", times.NowMilli()))
+	err := csv.Create([]string{"1", "2"})
 	if err != nil {
 		t.Fatal(err)
 	}

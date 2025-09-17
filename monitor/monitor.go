@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"gitee.com/lance4117/GoFuse/fileio"
 	"gitee.com/lance4117/GoFuse/logger"
 	"gitee.com/lance4117/GoFuse/times"
-	"gitee.com/lance4117/GoFuse/writer"
 	"github.com/shirou/gopsutil/v4/process"
 )
 
@@ -16,11 +16,11 @@ type Monitor struct {
 	interval   time.Duration
 	duration   time.Duration
 	collectors []Collector
-	writer     writer.Writer
+	writer     fileio.Files
 }
 
 // NewCustomMonitor 通用构造函数
-func NewCustomMonitor(pid int, interval, duration time.Duration, collectors []Collector, writer writer.Writer) *Monitor {
+func NewCustomMonitor(pid int, interval, duration time.Duration, collectors []Collector, writer fileio.Files) *Monitor {
 	return &Monitor{
 		pid:        pid,
 		interval:   interval,
@@ -37,7 +37,7 @@ func NewDefaultMonitor(pid int, path string) *Monitor {
 		interval:   time.Second,
 		duration:   time.Minute,
 		collectors: []Collector{NewCPUCollector(), NewMemoryCollector(), NewIOCollector(), NewDiskCollector(path), NewNetCollector()},
-		writer:     writer.NewCSVWriter(fmt.Sprintf("monitor-%d", times.NowMilli())),
+		writer:     fileio.NewCSVFileIO(fmt.Sprintf("monitor-%d", times.NowMilli())),
 	}
 }
 
@@ -55,7 +55,7 @@ func (m *Monitor) Run() error {
 	for _, c := range m.collectors {
 		headers = append(headers, c.Names()...)
 	}
-	if err := m.writer.Init(headers); err != nil {
+	if err := m.writer.Create(headers); err != nil {
 		return err
 	}
 	defer m.writer.Close()
