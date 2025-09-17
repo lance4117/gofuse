@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"gitee.com/lance4117/GoFuse/logger"
+	"gitee.com/lance4117/GoFuse/once"
 	ctypes "github.com/cometbft/cometbft/rpc/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
@@ -39,8 +40,10 @@ type Client struct {
 func InitClient(address string, option []cosmosclient.Option) *Client {
 	ctx := context.Background()
 	// Create a Cosmos client instance
-	client, err := cosmosclient.New(ctx, option...)
-
+	getClient := once.DoWithErr(func() (cosmosclient.Client, error) {
+		return cosmosclient.New(ctx, option...)
+	})
+	client, err := getClient()
 	if err != nil {
 		logger.Fatal(err, "Init Cosmos Client Fail")
 		return nil
