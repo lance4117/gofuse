@@ -145,8 +145,9 @@ func (c *NetCollector) Collect(_ *process.Process, now time.Time) ([]string, err
 	if !c.prevTS.IsZero() {
 		delta := now.Sub(c.prevTS).Seconds()
 		if delta > 1e-9 {
-			recvRate = (recv - c.prevRecv) / uint64(delta)
-			sentRate = (sent - c.prevSent) / uint64(delta)
+			// 使用浮点数计算，然后转换为整数
+			recvRate = uint64(float64(recv-c.prevRecv) / delta)
+			sentRate = uint64(float64(sent-c.prevSent) / delta)
 		}
 	}
 	c.prevRecv, c.prevSent = recv, sent
