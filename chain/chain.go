@@ -3,11 +3,11 @@ package chain
 import (
 	"context"
 
+	"cosmossdk.io/math"
 	"gitee.com/lance4117/GoFuse/logger"
 	"gitee.com/lance4117/GoFuse/once"
 	ctypes "github.com/cometbft/cometbft/rpc/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdktypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosaccount"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
@@ -41,6 +41,7 @@ func InitClient(address string, option []cosmosclient.Option) *Client {
 	ctx := context.Background()
 	// Create a Cosmos client instance
 	getClient := once.DoWithErr(func() (cosmosclient.Client, error) {
+
 		return cosmosclient.New(ctx, option...)
 	})
 	client, err := getClient()
@@ -61,7 +62,7 @@ func InitClient(address string, option []cosmosclient.Option) *Client {
 // ctx: 操作的上下文
 // msgs: 包含在交易中的消息
 // returns: 广播交易的响应和发生的任何错误
-func (c *Client) DoBroadcastTx(ctx context.Context, msgs ...sdktypes.Msg) (cosmosclient.Response, error) {
+func (c *Client) DoBroadcastTx(ctx context.Context, msgs ...sdk.Msg) (cosmosclient.Response, error) {
 	return c.CosmosClient.BroadcastTx(ctx, *c.Account, msgs...)
 }
 
@@ -70,7 +71,7 @@ func (c *Client) DoBroadcastTx(ctx context.Context, msgs ...sdktypes.Msg) (cosmo
 // options: 自定义交易选项
 // msgs: 包含在交易中的消息
 // returns: 广播交易的响应和发生的任何错误
-func (c *Client) DoBroadcastTxWithOptions(ctx context.Context, options cosmosclient.TxOptions, msgs ...sdktypes.Msg) (cosmosclient.Response, error) {
+func (c *Client) DoBroadcastTxWithOptions(ctx context.Context, options cosmosclient.TxOptions, msgs []sdk.Msg) (cosmosclient.Response, error) {
 	// Create a transaction with the given options
 	tx, err := c.CosmosClient.CreateTxWithOptions(ctx, *c.Account,
 		options, msgs...)
@@ -80,6 +81,37 @@ func (c *Client) DoBroadcastTxWithOptions(ctx context.Context, options cosmoscli
 
 	// Broadcast the transaction
 	return tx.Broadcast(ctx)
+}
+
+// DoBroadcastTxAsyncWithOptions 通过sync模式广播包含给定消息的交易
+func (c *Client) DoBroadcastTxAsyncWithOptions(options cosmosclient.TxOptions, msgs []sdk.Msg) (*sdk.TxResponse, error) {
+	// 设置广播模式
+	withBroadcastMode := c.CosmosClient.Context().WithBroadcastMode("sync")
+	// 根据这个模式构造新的tx构造器
+	builder := withBroadcastMode.TxConfig.NewTxBuilder()
+	// 为这个构造器存入messages
+	err := builder.SetMsgs(msgs...)
+	if err != nil {
+		return nil, err
+	}
+	// 设置费用
+	builder.SetFeeAmount([]sdk.Coin{{
+		Denom:  "stake",
+		Amount: math.NewInt(0),
+	}})
+	// 设置 gas 限制
+	builder.SetGasLimit(options.GasLimit)
+
+	// TODO 签名交易
+
+	// 构造tx的比特流
+	txBytes, err := withBroadcastMode.TxConfig.TxEncoder()(builder.GetTx())
+	if err != nil {
+		return nil, err
+	}
+
+	// 将tx以sync的方式广播
+	return withBroadcastMode.BroadcastTxSync(txBytes)
 }
 
 // BankBalance 查询客户端账户的余额
