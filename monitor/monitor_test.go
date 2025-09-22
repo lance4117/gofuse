@@ -12,5 +12,9 @@ func TestPsutils(t *testing.T) {
 	if err := monitor.Run(); err != nil {
 		logger.Fatal(err)
 	}
+}
 
+func TestNamePid(t *testing.T) {
+	pid, err := GetPidByName("blogd.exe")
+	t.Log(pid, err)
 }
