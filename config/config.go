@@ -9,7 +9,7 @@ import (
 
 var cfg *viper.Viper
 
-var InitConfig = once.DoWithParam(func(path string) struct{} {
+var Init = once.DoWithParam(func(path string) struct{} {
 	if path == "" {
 		path = "./config.yaml"
 	}
@@ -49,6 +49,15 @@ func GetInt(key string) int {
 		return 0
 	}
 	return cfg.GetInt(key)
+}
+
+// GetFloat64 通过key访问配置
+func GetFloat64(key string) float64 {
+	if cfg == nil {
+		logger.Error(errs.ErrConfigLoad, key)
+		return 0
+	}
+	return cfg.GetFloat64(key)
 }
 
 // GetBool 通过key访问配置
