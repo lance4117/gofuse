@@ -4,6 +4,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/lance4117/gofuse/errs"
 	"github.com/lance4117/gofuse/logger"
 	"github.com/lance4117/gofuse/once"
 	"xorm.io/xorm"
@@ -25,24 +26,18 @@ type DataBase struct {
 var NewMySql = once.DoWithParam(func(cfg Config) *DataBase {
 	engine, err := xorm.NewEngine(cfg.Driver, cfg.Source)
 	if err != nil {
-		logger.Fatal(err, "Init My Sql Fail")
+		logger.Fatal(err, errs.ErrNewStoreEngineFail)
+		return nil
+	}
+	engine.SetMaxOpenConns(cfg.MaxOpenConns)
+	engine.SetMaxIdleConns(cfg.MaxIdleConns)
+	engine.SetConnMaxLifetime(cfg.ConnMaxLifetime)
+	engine.ShowSQL(cfg.ShowSQL)
+
+	err = engine.Ping()
+	if err != nil {
+		logger.Fatal(err, errs.ErrNewStoreEngineFail)
 		return nil
 	}
 	return &DataBase{engine}
 })
-
-func (db *DataBase) Insert(beans ...interface{}) (int64, error) {
-	return db.engine.Insert(beans)
-}
-
-func (db *DataBase) Get(beans ...interface{}) (bool, error) {
-	return db.engine.Get(beans)
-}
-
-func (db *DataBase) Ping() error {
-	return db.engine.Ping()
-}
-
-func (db *DataBase) Close() error {
-	return db.engine.Close()
-}
