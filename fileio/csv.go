@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"gitee.com/lance4117/GoFuse/errs"
-	"gitee.com/lance4117/GoFuse/times"
+	"github.com/lance4117/gofuse/errs"
+	"github.com/lance4117/gofuse/times"
 )
 
 var DefaultCSVFileName = fmt.Sprintf("writer-%d", times.NowMilli())

@@ -3,13 +3,13 @@ package chain
 import (
 	"context"
 
-	"gitee.com/lance4117/GoFuse/logger"
-	"gitee.com/lance4117/GoFuse/once"
 	ctypes "github.com/cometbft/cometbft/rpc/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosaccount"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
+	"github.com/lance4117/gofuse/logger"
+	"github.com/lance4117/gofuse/once"
 )
 
 const (

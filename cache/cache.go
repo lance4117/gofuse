@@ -4,9 +4,9 @@ import (
 	"reflect"
 	"time"
 
-	"gitee.com/lance4117/GoFuse/codec"
-	"gitee.com/lance4117/GoFuse/errs"
 	"github.com/allegro/bigcache"
+	"github.com/lance4117/gofuse/codec"
+	"github.com/lance4117/gofuse/errs"
 )
 
 type Cache struct {

@@ -1,4 +1,4 @@
-module gitee.com/lance4117/GoFuse
+module github.com/lance4117/gofuse
 
 go 1.25.1
 
@@ -9,6 +9,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.53.4
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/gin-gonic/gin v1.10.1
+	github.com/go-sql-driver/mysql v1.7.0
 	github.com/ignite/cli/v28 v28.11.0
 	github.com/panjf2000/ants/v2 v2.11.3
 	github.com/shirou/gopsutil/v4 v4.25.8
@@ -16,6 +17,7 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/vmihailenco/msgpack/v5 v5.4.1
 	go.uber.org/zap v1.27.0
+	xorm.io/xorm v1.3.10
 )
 
 replace github.com/cometbft/cometbft => github.com/cometbft/cometbft v0.38.17
@@ -190,4 +192,5 @@ require (
 	nhooyr.io/websocket v1.8.6 // indirect
 	pgregory.net/rapid v1.2.0 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
+	xorm.io/builder v0.3.11-0.20220531020008-1bd24a7dc978 // indirect
 )

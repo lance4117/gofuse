@@ -3,7 +3,7 @@ package monitor
 import (
 	"testing"
 
-	"gitee.com/lance4117/GoFuse/logger"
+	"github.com/lance4117/gofuse/logger"
 )
 
 func TestPsutils(t *testing.T) {

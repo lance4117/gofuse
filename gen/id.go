@@ -1,7 +1,7 @@
 package gen
 
 import (
-	"gitee.com/lance4117/GoFuse/once"
+	"github.com/lance4117/gofuse/once"
 	sf "github.com/sony/sonyflake/v2"
 )
 

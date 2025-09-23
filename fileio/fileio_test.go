@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"gitee.com/lance4117/GoFuse/times"
+	"github.com/lance4117/gofuse/times"
 )
 
 func TestCSV(t *testing.T) {

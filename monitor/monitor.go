@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"gitee.com/lance4117/GoFuse/fileio"
-	"gitee.com/lance4117/GoFuse/logger"
-	"gitee.com/lance4117/GoFuse/times"
+	"github.com/lance4117/gofuse/fileio"
+	"github.com/lance4117/gofuse/logger"
+	"github.com/lance4117/gofuse/times"
 	"github.com/shirou/gopsutil/v4/process"
 )
 

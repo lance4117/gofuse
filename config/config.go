@@ -1,9 +1,9 @@
 package config
 
 import (
-	"gitee.com/lance4117/GoFuse/errs"
-	"gitee.com/lance4117/GoFuse/logger"
-	"gitee.com/lance4117/GoFuse/once"
+	"github.com/lance4117/gofuse/errs"
+	"github.com/lance4117/gofuse/logger"
+	"github.com/lance4117/gofuse/once"
 	"github.com/spf13/viper"
 )
 

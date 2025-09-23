@@ -1,8 +1,8 @@
 package server
 
 import (
-	"gitee.com/lance4117/GoFuse/logger"
 	"github.com/gin-gonic/gin"
+	"github.com/lance4117/gofuse/logger"
 )
 
 type Engine struct {

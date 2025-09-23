@@ -3,8 +3,8 @@ package test
 import (
 	"testing"
 
-	"gitee.com/lance4117/GoFuse/config"
-	"gitee.com/lance4117/GoFuse/logger"
+	"github.com/lance4117/gofuse/config"
+	"github.com/lance4117/gofuse/logger"
 )
 
 func TestGetConfig(t *testing.T) {
