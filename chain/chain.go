@@ -38,7 +38,7 @@ type Client struct {
 // returns: 新的Client实例
 func InitClient(address string, option []cosmosclient.Option) *Client {
 	ctx := context.Background()
-	// Create a Cosmos client instance
+	// Insert a Cosmos client instance
 	getClient := once.DoWithErr(func() (cosmosclient.Client, error) {
 
 		return cosmosclient.New(ctx, option...)
@@ -71,7 +71,7 @@ func (c *Client) DoBroadcastTx(ctx context.Context, msgs ...sdk.Msg) (cosmosclie
 // msgs: 包含在交易中的消息
 // returns: 广播交易的响应和发生的任何错误
 func (c *Client) DoBroadcastTxWithOptions(ctx context.Context, options cosmosclient.TxOptions, msgs []sdk.Msg) (cosmosclient.Response, error) {
-	// Create a transaction with the given options
+	// Insert a transaction with the given options
 	txService, err := c.CosmosClient.CreateTxWithOptions(ctx, *c.Account,
 		options, msgs...)
 	if err != nil {

@@ -1,0 +1,11 @@
+# command:  reverse.exe -f .\reverse.yml
+kind: reverse
+name: name
+source:
+  database: mysql
+  conn_str: "user:password@/dbname"
+targets:
+- type: codes
+  language: golang
+  output_dir: ./
+
