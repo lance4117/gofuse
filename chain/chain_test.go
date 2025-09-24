@@ -9,7 +9,7 @@ import (
 func TestInitClient(t *testing.T) {
 	options := append(DefaultOptions, cosmosclient.WithGasAdjustment(1.5),
 		cosmosclient.WithGasPrices("0stake"), cosmosclient.WithHome("D:\\code\\blogd\\blogdata"))
-	client := InitClient("cosmos1rdx27mfxehx4z45wvw0c7d6hyn78gshu065420", options)
+	client := NewClient("cosmos1rdx27mfxehx4z45wvw0c7d6hyn78gshu065420", options)
 	if client == nil {
 		return
 	}
@@ -22,7 +22,7 @@ func TestPubkeyClient(t *testing.T) {
 
 	options := append(DefaultOptions, cosmosclient.WithGasAdjustment(1.5),
 		cosmosclient.WithGasPrices("0stake"), cosmosclient.WithHome("D:\\code\\blogd\\blogdata"))
-	client := InitClient(address, options)
+	client := NewClient(address, options)
 	if client == nil {
 		return
 	}
@@ -36,7 +36,7 @@ func TestNewAccountClient(t *testing.T) {
 	}
 	options := append(DefaultOptions, cosmosclient.WithGasAdjustment(1.5),
 		cosmosclient.WithGasPrices("0stake"), cosmosclient.WithHome("D:\\code\\blogd\\blogdata"))
-	client := InitClient(key.Address, options)
+	client := NewClient(key.Address, options)
 	if client == nil {
 		return
 	}

@@ -32,11 +32,11 @@ type Client struct {
 	Account      *cosmosaccount.Account
 }
 
-// InitClient 初始化Cosmos区块链客户端
+// NewClient 初始化Cosmos区块链客户端
 // address: 要使用的账户地址
 // option: 连接到Cosmos节点的客户端选项
 // returns: 新的Client实例
-func InitClient(address string, option []cosmosclient.Option) *Client {
+func NewClient(address string, option []cosmosclient.Option) *Client {
 	ctx := context.Background()
 	// Insert a Cosmos client instance
 	getClient := once.DoWithErr(func() (cosmosclient.Client, error) {
