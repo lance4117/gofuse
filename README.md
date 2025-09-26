@@ -31,6 +31,7 @@
 | **📂 fileio**  | 通用文件 IO，内置 CSV 读写实现           |
 | **🔄 codec**   | JSON / MessagePack 编解码支持      |
 | **💻 system**  | 系统工具函数（外部命令执行等）               |
+| **🎫 limiter** | 通用限流封装包,按 key 区分              |
 | **⚡ cache**    | 基于 BigCache 的高性能缓存            |
 | **🔑 gen**     | 分布式 ID（Sonyflake）和数据生成工具      |
 | **🚨 errs**    | 统一错误定义与处理                     |
