@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/lance4117/gofuse/logger"
 	"github.com/lance4117/gofuse/server"
 	"golang.org/x/time/rate"
 )
@@ -68,6 +69,7 @@ func Middleware(m *Manager) server.ContextHandler {
 		key := c.Path() // 根据路由路径作为 key
 
 		if !m.Allow(key) {
+			logger.Errorf("%s has too many requests", key)
 			c.Fail(http.StatusTooManyRequests)
 			return
 		}
