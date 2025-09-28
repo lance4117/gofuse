@@ -42,7 +42,7 @@ func NewDefaultMonitor(pid int, path string) *Monitor {
 }
 
 // Run 执行监控
-func (m *Monitor) Run() error {
+func (m *Monitor) Run(showLog bool) error {
 	logger.Infof("monitor started, pid=%d, interval=%s, duration=%s", m.pid, m.interval, m.duration)
 
 	p, err := process.NewProcess(int32(m.pid))
@@ -83,7 +83,9 @@ func (m *Monitor) Run() error {
 			if err := m.writer.Write(row); err != nil {
 				return err
 			}
-			logger.Infof("recorded sample for pid=%d at %s", m.pid, now.Format(time.DateTime))
+			if showLog {
+				logger.Infof("recorded sample for pid=%d at %s", m.pid, now.Format(time.DateTime))
+			}
 		}
 	}
 }
