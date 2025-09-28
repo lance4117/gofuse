@@ -9,7 +9,7 @@ import (
 func TestPsutils(t *testing.T) {
 	pid := 28828
 	monitor := NewDefaultMonitor(pid, "C:\\")
-	if err := monitor.Run(); err != nil {
+	if err := monitor.Run(false); err != nil {
 		logger.Fatal(err)
 	}
 }
