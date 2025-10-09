@@ -11,7 +11,7 @@ func JSONMarshal(value any) ([]byte, error) {
 
 // JSONUnmarshal 将bytes反序列化为value相对应的结构
 func JSONUnmarshal(bytes []byte, value any) error {
-	return json.Unmarshal(bytes, &value)
+	return json.Unmarshal(bytes, value)
 }
 
 // JSONUnmarshalTo 将bytes反序列化为泛型相对应的结构
