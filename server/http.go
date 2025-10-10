@@ -5,12 +5,12 @@ import (
 	"github.com/lance4117/gofuse/logger"
 )
 
-type Server struct {
+type HttpServer struct {
 	*gin.Engine
 }
 
-// New 初始化HTTP服务器引擎
-func New(isDebug bool) *Server {
+// NewHTTP 初始化HTTP服务器引擎
+func NewHTTP(isDebug bool) *HttpServer {
 	// 颜色
 	gin.ForceConsoleColor()
 	// 是否为debug模式
@@ -25,11 +25,11 @@ func New(isDebug bool) *Server {
 	engine.Use(gin.Recovery())
 	engine.Use(gin.Logger())
 
-	return &Server{engine}
+	return &HttpServer{engine}
 }
 
 // Run 启动HTTP服务器
-func (s *Server) Run(addr ...string) {
+func (s *HttpServer) Run(addr ...string) {
 	var path string
 	// 默认本地8080
 	if len(addr) == 0 {
@@ -41,23 +41,23 @@ func (s *Server) Run(addr ...string) {
 	logger.Info("HTTP Service start at ", path)
 	err := s.Engine.Run(path)
 	if err != nil {
-		logger.Fatal(err, "Server Run Fail")
+		logger.Fatal(err, "HttpServer Run Fail")
 		return
 	}
 }
 
 // POST 注册POST请求处理函数
-func (s *Server) POST(path string, handles ...ContextHandler) {
+func (s *HttpServer) POST(path string, handles ...ContextHandler) {
 	s.Engine.POST(path, convertHandler(handles...)...)
 }
 
 // GET 注册GET请求处理函数
-func (s *Server) GET(path string, handles ...ContextHandler) {
+func (s *HttpServer) GET(path string, handles ...ContextHandler) {
 	s.Engine.GET(path, convertHandler(handles...)...)
 }
 
 // Use 注册中间件处理函数
-func (s *Server) Use(handles ...ContextHandler) {
+func (s *HttpServer) Use(handles ...ContextHandler) {
 	s.Engine.Use(convertHandler(handles...)...)
 }
 

@@ -15,7 +15,7 @@ func TestLimiter(t *testing.T) {
 
 	lm := NewLimiterManager(cfg)
 
-	s := server.New(true)
+	s := server.NewHTTP(true)
 	s.Use(Middleware(lm))
 
 	s.GET("/ping", func(ctx *server.Context) {

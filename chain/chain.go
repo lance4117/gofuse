@@ -38,9 +38,8 @@ type Client struct {
 // returns: 新的Client实例
 func NewClient(address string, option []cosmosclient.Option) *Client {
 	ctx := context.Background()
-	// Insert a Cosmos client instance
+	// 单例开启一个cosmos客户端
 	getClient := once.DoWithErr(func() (cosmosclient.Client, error) {
-
 		return cosmosclient.New(ctx, option...)
 	})
 	c, err := getClient()

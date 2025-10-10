@@ -69,7 +69,7 @@ func (c *Context) Fail(code int) {
 // Response 响应请求，code为状态码,data 响应的数据
 func (c *Context) Response(code int, data any) {
 	c.GinCtx.Header("Code", strconv.Itoa(code))
-	switch c.GinCtx.ContentType() {
+	switch c.ContentType() {
 	case binding.MIMEJSON:
 		c.GinCtx.JSON(code, data)
 	case binding.MIMEPROTOBUF:
