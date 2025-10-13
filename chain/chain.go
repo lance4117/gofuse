@@ -44,7 +44,7 @@ func NewClient(address string, option []cosmosclient.Option) *Client {
 	})
 	c, err := getClient()
 	if err != nil {
-		logger.Fatal(err, "Init Cosmos Client Fail")
+		logger.Fatal(err, "New Cosmos Client Fail")
 		return nil
 	}
 	acc, err := c.Account(address)
