@@ -51,6 +51,24 @@ func GetInt(key string) int {
 	return cfg.GetInt(key)
 }
 
+// GetInt64 通过key访问配置
+func GetInt64(key string) int64 {
+	if cfg == nil {
+		logger.Error(errs.ErrConfigLoad, key)
+		return 0
+	}
+	return cfg.GetInt64(key)
+}
+
+// GetUint64 通过key访问配置
+func GetUint64(key string) uint64 {
+	if cfg == nil {
+		logger.Error(errs.ErrConfigLoad, key)
+		return 0
+	}
+	return cfg.GetUint64(key)
+}
+
 // GetFloat64 通过key访问配置
 func GetFloat64(key string) float64 {
 	if cfg == nil {
