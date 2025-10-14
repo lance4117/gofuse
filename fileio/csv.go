@@ -4,12 +4,13 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/lance4117/gofuse/errs"
 	"github.com/lance4117/gofuse/times"
 )
 
-var DefaultCSVFileName = fmt.Sprintf("writer-%d", times.NowMilli())
+var DefaultCSVFileName = fmt.Sprintf("writer-%d.csv", times.NowMilli())
 
 // CSVFileIO CSV文件读写器结构体
 type CSVFileIO struct {
@@ -20,20 +21,21 @@ type CSVFileIO struct {
 }
 
 // NewCSVFileIO 创建一个新的CSV写入器实例
-// pathAndName: CSV文件路径 eg: ./path/to/filename
+// pathAndName: CSV文件路径 eg: ./path/to/filename.csv
 // 返回CSVWriter指针
 func NewCSVFileIO(pathAndName string) *CSVFileIO {
 	if pathAndName == "" {
 		pathAndName = DefaultCSVFileName
 	}
-	return &CSVFileIO{Filename: pathAndName}
+
+	return &CSVFileIO{Filename: ensureCSVExtension(pathAndName)}
 }
 
 // Create 创建CSV文件并可选择写入表头(读模式)
 // headers: 可选的表头行数据
 func (w *CSVFileIO) Create(headers []string) error {
 	var err error
-	w.File, err = os.Create(w.Filename + ".csv")
+	w.File, err = os.Create(w.Filename)
 	if err != nil {
 		return err
 	}
@@ -47,7 +49,7 @@ func (w *CSVFileIO) Create(headers []string) error {
 // Open 打开已存在的CSV文件用于读取(写模式)
 func (w *CSVFileIO) Open() error {
 	var err error
-	w.File, err = os.Open(w.Filename + ".csv")
+	w.File, err = os.Open(w.Filename)
 	if err != nil {
 		return err
 	}
@@ -86,4 +88,11 @@ func (w *CSVFileIO) Close() error {
 		return w.File.Close()
 	}
 	return nil
+}
+
+func ensureCSVExtension(filename string) string {
+	if !strings.HasSuffix(filename, ".csv") {
+		filename += ".csv"
+	}
+	return filename
 }
