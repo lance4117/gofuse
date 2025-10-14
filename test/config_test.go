@@ -8,7 +8,7 @@ import (
 )
 
 func TestGetConfig(t *testing.T) {
-	config.Init("")
+	config.Init("12312312")
 
 	logger.Info(config.All())
 

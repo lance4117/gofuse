@@ -16,7 +16,7 @@ var Init = once.DoWithParam(func(path string) struct{} {
 	cfg = viper.New()
 	cfg.SetConfigFile(path)
 	if err := cfg.ReadInConfig(); err != nil {
-		logger.Panic(errs.ErrConfigRead, err)
+		logger.Fatal(errs.ErrConfigRead, err)
 	}
 	return struct{}{}
 })
@@ -24,8 +24,8 @@ var Init = once.DoWithParam(func(path string) struct{} {
 // LoadKey 通过key获取配置结构体
 func LoadKey(key string, configStru interface{}) error {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, configStru)
-		return errs.ErrConfigLoad
+		logger.Error(errs.ErrConfigLoad(key), configStru)
+		return errs.ErrConfigLoad(key)
 	}
 	if err := cfg.UnmarshalKey(key, configStru); err != nil {
 		return err
@@ -36,7 +36,7 @@ func LoadKey(key string, configStru interface{}) error {
 // GetString 通过key访问配置
 func GetString(key string) string {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigLoad(key), key)
 		return ""
 	}
 	return cfg.GetString(key)
@@ -45,7 +45,7 @@ func GetString(key string) string {
 // GetInt 通过key访问配置
 func GetInt(key string) int {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigLoad(key), key)
 		return 0
 	}
 	return cfg.GetInt(key)
@@ -54,7 +54,7 @@ func GetInt(key string) int {
 // GetInt64 通过key访问配置
 func GetInt64(key string) int64 {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigLoad(key), key)
 		return 0
 	}
 	return cfg.GetInt64(key)
@@ -63,7 +63,7 @@ func GetInt64(key string) int64 {
 // GetUint64 通过key访问配置
 func GetUint64(key string) uint64 {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigLoad(key), key)
 		return 0
 	}
 	return cfg.GetUint64(key)
@@ -72,7 +72,7 @@ func GetUint64(key string) uint64 {
 // GetFloat64 通过key访问配置
 func GetFloat64(key string) float64 {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigLoad(key), key)
 		return 0
 	}
 	return cfg.GetFloat64(key)
@@ -81,7 +81,7 @@ func GetFloat64(key string) float64 {
 // GetBool 通过key访问配置
 func GetBool(key string) bool {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigLoad(key), key)
 		return false
 	}
 	return cfg.GetBool(key)
