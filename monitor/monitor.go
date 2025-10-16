@@ -1,6 +1,7 @@
 package monitor
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -20,11 +21,10 @@ type Monitor struct {
 }
 
 // NewCustomMonitor 通用构造函数
-func NewCustomMonitor(pid int, interval, duration time.Duration, collectors []Collector, writer fileio.Files) *Monitor {
+func NewCustomMonitor(pid int, interval time.Duration, collectors []Collector, writer fileio.Files) *Monitor {
 	return &Monitor{
 		pid:        pid,
 		interval:   interval,
-		duration:   duration,
 		collectors: collectors,
 		writer:     writer,
 	}
@@ -42,7 +42,8 @@ func NewDefaultMonitor(pid int, path string) *Monitor {
 }
 
 // Run 执行监控
-func (m *Monitor) Run(showLog bool) error {
+// 用 ctx 管控整个生命周期
+func (m *Monitor) Run(ctx context.Context, showLog bool) error {
 	logger.Infof("monitor started, pid=%d, interval=%s, duration=%s", m.pid, m.interval, m.duration)
 
 	p, err := process.NewProcess(int32(m.pid))
@@ -62,11 +63,10 @@ func (m *Monitor) Run(showLog bool) error {
 
 	ticker := time.NewTicker(m.interval)
 	defer ticker.Stop()
-	timeout := time.After(m.duration)
 
 	for {
 		select {
-		case <-timeout:
+		case <-ctx.Done():
 			logger.Infof("monitor finished, pid=%d", m.pid)
 			return nil
 		case now := <-ticker.C:

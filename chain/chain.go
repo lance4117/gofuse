@@ -22,8 +22,8 @@ type Config struct {
 	BroadcastMode  txtypes.BroadcastMode // 广播模式
 
 	// 发送交易相关设置
-	CoionType string
-	GasLimit  uint64
+	Fee      string
+	GasLimit uint64
 
 	// gRPC 限制/保活
 	GRPCMaxRecvBytes int
@@ -56,7 +56,7 @@ func DefaultConfig(chainid, homedir string, modules ...module.AppModuleBasic) Co
 		HomeDir:          homedir,
 		KeyringBackend:   keyring.BackendTest,
 		BroadcastMode:    txtypes.BroadcastMode_BROADCAST_MODE_ASYNC,
-		CoionType:        "stake",
+		Fee:              "0stake",
 		GasLimit:         200000,
 		GRPCMaxRecvBytes: 32 << 20, // 32 MiB
 		GRPCMaxSendBytes: 32 << 20, // 32 MiB

@@ -7,7 +7,6 @@ import (
 
 	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
 	coretypes "github.com/cometbft/cometbft/rpc/core/types"
-	ctypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdktx "github.com/cosmos/cosmos-sdk/client/tx"
@@ -151,7 +150,7 @@ func (c *Client) Account(address sdk.AccAddress) (client.Account, error) {
 // TxFactory 返回一个带链配置的 *tx.Factory，便于构建/签名/广播
 func (c *Client) TxFactory() (sdktx.Factory, error) {
 	// 解析手续费
-	fees, err := sdk.ParseCoinsNormalized(c.Config.CoionType)
+	fees, err := sdk.ParseCoinsNormalized(c.Config.Fee)
 	if err != nil {
 		return sdktx.Factory{}, err
 	}
@@ -323,7 +322,7 @@ func (c *Client) SendCoins(
 
 // LatestHeight 获取最新区块高度
 func (c *Client) LatestHeight(ctx context.Context) (int64, error) {
-	var s *ctypes.ResultStatus
+	var s *coretypes.ResultStatus
 	var err error
 	s, err = c.rpcClient.Status(ctx)
 	if err != nil {
