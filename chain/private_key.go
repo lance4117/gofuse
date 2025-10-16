@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	DefaultHDPath = "m/44'/118'/0/0/0"
+	DefaultHDPath        = "m/44'/118'/0/0/0"
+	DefaultAddressPrefix = "cosmos"
 )
 
 // KeyRing 包含区块链账户的密钥信息

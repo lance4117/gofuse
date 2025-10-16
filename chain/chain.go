@@ -1,97 +1,72 @@
 package chain
 
 import (
-	"context"
+	"time"
 
-	ctypes "github.com/cometbft/cometbft/rpc/core/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/ignite/cli/v28/ignite/pkg/cosmosaccount"
-	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
-	"github.com/lance4117/gofuse/logger"
-	"github.com/lance4117/gofuse/once"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/types/module"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
+	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 )
 
-const (
-	DefaultAddressPrefix = "cosmos"
-	DefaultAddress       = "http://localhost:26657"
-)
+// Config 客户端的配置参数
+type Config struct {
+	// 基础设置
+	ChainID        string                // 链 ID, node id
+	NodeRPC        string                // 节点 RPC 地址 e.g. "http://127.0.0.1:26657"
+	NodeGRPC       string                // 节点 gRPC 地址 e.g. "127.0.0.1:9090"
+	HomeDir        string                // 数据目录
+	KeyringBackend string                // "test" | "file" | "os"
+	BroadcastMode  txtypes.BroadcastMode // 广播模式
 
-var (
-	// DefaultOptions are the default options for creating a Cosmos client
-	DefaultOptions = []cosmosclient.Option{
-		cosmosclient.WithAddressPrefix(DefaultAddressPrefix),
-		cosmosclient.WithNodeAddress(DefaultAddress),
+	// 发送交易相关设置
+	CoionType string
+	GasLimit  uint64
+
+	// gRPC 限制/保活
+	GRPCMaxRecvBytes int
+	GRPCMaxSendBytes int
+	KeepaliveTime    time.Duration
+	KeepaliveTimeout time.Duration
+
+	// 调试 / 其他
+	SkipConfirmation bool
+
+	// 自定义模块注册（可选，覆盖默认：auth + bank）
+	// 用于自定义 encoding config（注册更多模块）
+	RegisterModules func() moduletestutil.TestEncodingConfig
+}
+
+// DefaultConfig 获取默认配置
+// modules yourmodule.AppModule{}
+// (通过go.mod引入yourmodule "module/x/module/foo")
+func DefaultConfig(chainid, homedir string, modules ...module.AppModuleBasic) Config {
+	// 默认带auth和bank模块
+	var m []module.AppModuleBasic
+	m = append(modules,
+		bank.AppModule{},
+		auth.AppModule{},
+	)
+	return Config{
+		ChainID:          chainid,
+		NodeRPC:          "http://127.0.0.1:26657",
+		NodeGRPC:         "127.0.0.1:9090",
+		HomeDir:          homedir,
+		KeyringBackend:   keyring.BackendTest,
+		BroadcastMode:    txtypes.BroadcastMode_BROADCAST_MODE_ASYNC,
+		CoionType:        "stake",
+		GasLimit:         200000,
+		GRPCMaxRecvBytes: 32 << 20, // 32 MiB
+		GRPCMaxSendBytes: 32 << 20, // 32 MiB
+		KeepaliveTime:    30 * time.Second,
+		KeepaliveTimeout: 10 * time.Second,
+		SkipConfirmation: false,
+		RegisterModules: func() moduletestutil.TestEncodingConfig {
+			return moduletestutil.MakeTestEncodingConfig(
+				m...,
+			)
+		},
 	}
-)
-
-// Client 基于账号的Cosmos客户端
-type Client struct {
-	CosmosClient *cosmosclient.Client
-	Address      string
-	Account      *cosmosaccount.Account
-}
-
-// NewClient 初始化Cosmos区块链客户端
-// address: 要使用的账户地址
-// option: 连接到Cosmos节点的客户端选项
-// returns: 新的Client实例
-func NewClient(address string, option []cosmosclient.Option) *Client {
-	ctx := context.Background()
-	// 单例开启一个cosmos客户端
-	getClient := once.DoWithErr(func() (cosmosclient.Client, error) {
-		return cosmosclient.New(ctx, option...)
-	})
-	c, err := getClient()
-	if err != nil {
-		logger.Fatal(err, "New Cosmos Client Fail")
-		return nil
-	}
-	acc, err := c.Account(address)
-	if err != nil {
-		logger.Fatal(err, address)
-	}
-	logger.Infof("Init Blog Client %s success", address)
-
-	return &Client{&c, address, &acc}
-}
-
-// DoBroadcastTx 广播包含给定消息的交易
-// ctx: 操作的上下文
-// msgs: 包含在交易中的消息
-// returns: 广播交易的响应和发生的任何错误
-func (c *Client) DoBroadcastTx(ctx context.Context, msgs ...sdk.Msg) (cosmosclient.Response, error) {
-	return c.CosmosClient.BroadcastTx(ctx, *c.Account, msgs...)
-}
-
-// DoBroadcastTxWithOptions 使用自定义选项广播交易
-// ctx: 操作的上下文
-// options: 自定义交易选项
-// msgs: 包含在交易中的消息
-// returns: 广播交易的响应和发生的任何错误
-func (c *Client) DoBroadcastTxWithOptions(ctx context.Context, options cosmosclient.TxOptions, msgs []sdk.Msg) (cosmosclient.Response, error) {
-	// Insert a transaction with the given options
-	txService, err := c.CosmosClient.CreateTxWithOptions(ctx, *c.Account,
-		options, msgs...)
-	if err != nil {
-		return cosmosclient.Response{}, err
-	}
-
-	// Broadcast the transaction
-	return txService.Broadcast(ctx)
-}
-
-// BankBalance 查询客户端账户的余额
-// ctx: 操作的上下文
-// pagination: 查询的分页参数
-// returns: 账户中的代币和发生的任何错误
-func (c *Client) BankBalance(ctx context.Context, pagination *query.PageRequest) (sdk.Coins, error) {
-	return c.CosmosClient.BankBalances(ctx, c.Address, pagination)
-}
-
-// Status 查询Cosmos节点的状态
-// ctx: 操作的上下文
-// returns: 状态结果和发生的任何错误
-func (c *Client) Status(ctx context.Context) (*ctypes.ResultStatus, error) {
-	return c.CosmosClient.Status(ctx)
 }
