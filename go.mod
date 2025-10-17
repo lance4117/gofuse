@@ -1,6 +1,6 @@
 module github.com/lance4117/gofuse
 
-go 1.25.1
+go 1.25.3
 
 require (
 	github.com/allegro/bigcache v1.2.1
