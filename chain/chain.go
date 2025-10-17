@@ -22,7 +22,7 @@ type Config struct {
 	BroadcastMode  txtypes.BroadcastMode // 广播模式
 
 	// 发送交易相关设置
-	Fee      string
+	Fee      string // e.g. "{amount0}{denomination},...,{amountN}{denominationN}"
 	GasLimit uint64
 
 	// gRPC 限制/保活

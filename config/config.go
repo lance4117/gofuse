@@ -22,15 +22,14 @@ var Init = once.DoWithParam(func(path string) struct{} {
 })
 
 // LoadKey 通过key获取配置结构体
-func LoadKey(key string, configStru interface{}) error {
+func LoadKey[T any](key string) (T, error) {
+	var ret T
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad(key), configStru)
-		return errs.ErrConfigLoad(key)
+		logger.Error(errs.ErrConfigLoad(key))
+		return ret, errs.ErrConfigLoad(key)
 	}
-	if err := cfg.UnmarshalKey(key, configStru); err != nil {
-		return err
-	}
-	return nil
+	err := cfg.UnmarshalKey(key, &ret)
+	return ret, err
 }
 
 // GetString 通过key访问配置
@@ -39,7 +38,11 @@ func GetString(key string) string {
 		logger.Error(errs.ErrConfigLoad(key), key)
 		return ""
 	}
-	return cfg.GetString(key)
+	ret := cfg.GetString(key)
+	if ret == "" {
+		logger.Warn(errs.WarnConfigLoadNil)
+	}
+	return ret
 }
 
 // GetInt 通过key访问配置
@@ -48,7 +51,11 @@ func GetInt(key string) int {
 		logger.Error(errs.ErrConfigLoad(key), key)
 		return 0
 	}
-	return cfg.GetInt(key)
+	ret := cfg.GetInt(key)
+	if ret == 0 {
+		logger.Warn(errs.WarnConfigLoadNil)
+	}
+	return ret
 }
 
 // GetInt64 通过key访问配置
@@ -57,7 +64,11 @@ func GetInt64(key string) int64 {
 		logger.Error(errs.ErrConfigLoad(key), key)
 		return 0
 	}
-	return cfg.GetInt64(key)
+	ret := cfg.GetInt64(key)
+	if ret == 0 {
+		logger.Warn(errs.WarnConfigLoadNil)
+	}
+	return ret
 }
 
 // GetUint64 通过key访问配置
@@ -66,7 +77,11 @@ func GetUint64(key string) uint64 {
 		logger.Error(errs.ErrConfigLoad(key), key)
 		return 0
 	}
-	return cfg.GetUint64(key)
+	ret := cfg.GetUint64(key)
+	if ret == 0 {
+		logger.Warn(errs.WarnConfigLoadNil)
+	}
+	return ret
 }
 
 // GetFloat64 通过key访问配置
@@ -75,7 +90,11 @@ func GetFloat64(key string) float64 {
 		logger.Error(errs.ErrConfigLoad(key), key)
 		return 0
 	}
-	return cfg.GetFloat64(key)
+	ret := cfg.GetFloat64(key)
+	if ret == 0 {
+		logger.Warn(errs.WarnConfigLoadNil)
+	}
+	return ret
 }
 
 // GetBool 通过key访问配置

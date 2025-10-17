@@ -201,22 +201,6 @@ func (c *Client) SignTxWith(signerName string, txBuilder client.TxBuilder, accNu
 	return sdktx.Sign(context.Background(), txf, signerName, txBuilder, true)
 }
 
-// SignTxAuto 自动查询 accNum/seq 后签名（一般场景）
-func (c *Client) SignTxAuto(signerName string, txBuilder client.TxBuilder) (accNum uint64, seq uint64, err error) {
-	addr, err := c.Address(signerName)
-	if err != nil {
-		return 0, 0, err
-	}
-	accNum, seq, err = c.AccountNumberSequence(addr)
-	if err != nil {
-		return 0, 0, err
-	}
-	if err = c.SignTxWith(signerName, txBuilder, accNum, seq); err != nil {
-		return 0, 0, err
-	}
-	return accNum, seq, nil
-}
-
 // EncodeTxBytes 编码为 protobuf bytes
 func (c *Client) EncodeTxBytes(txBuilder client.TxBuilder) ([]byte, error) {
 	return c.ClientCtx.TxConfig.TxEncoder()(txBuilder.GetTx())
@@ -236,7 +220,6 @@ func (c *Client) SignAndBroadcast(
 	ctx context.Context,
 	signerName string,
 	gasLimit uint64,
-	fees sdk.Coins,
 	mode txtypes.BroadcastMode,
 	msgs ...sdk.Msg,
 ) (*txtypes.BroadcastTxResponse, error) {
@@ -247,10 +230,18 @@ func (c *Client) SignAndBroadcast(
 		return nil, err
 	}
 	txBuilder.SetGasLimit(gasLimit)
-	txBuilder.SetFeeAmount(fees)
 
 	// 2) 签名（自动查询 accNum/seq）
-	if _, _, err = c.SignTxAuto(signerName, txBuilder); err != nil {
+	address, err := c.Address(signerName)
+	if err != nil {
+		return nil, err
+	}
+	num, seq, err := c.AccountNumberSequence(address)
+	if err != nil {
+		return nil, err
+	}
+	err = c.SignTxWith(signerName, txBuilder, num, seq)
+	if err != nil {
 		return nil, err
 	}
 
@@ -309,7 +300,6 @@ func (c *Client) SendCoins(
 	fromAddr, toAddr sdk.AccAddress,
 	amount sdk.Coins,
 	gasLimit uint64,
-	fees sdk.Coins,
 	mode txtypes.BroadcastMode,
 ) (*txtypes.BroadcastTxResponse, error) {
 	msg := &banktypes.MsgSend{
@@ -317,7 +307,7 @@ func (c *Client) SendCoins(
 		ToAddress:   toAddr.String(),
 		Amount:      amount,
 	}
-	return c.SignAndBroadcast(ctx, signerName, gasLimit, fees, mode, msg)
+	return c.SignAndBroadcast(ctx, signerName, gasLimit, mode, msg)
 }
 
 // LatestHeight 获取最新区块高度
