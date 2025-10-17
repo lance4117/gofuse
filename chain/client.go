@@ -219,8 +219,6 @@ func (c *Client) BroadcastTx(ctx context.Context, txBytes []byte, mode txtypes.B
 func (c *Client) SignAndBroadcast(
 	ctx context.Context,
 	signerName string,
-	gasLimit uint64,
-	mode txtypes.BroadcastMode,
 	msgs ...sdk.Msg,
 ) (*txtypes.BroadcastTxResponse, error) {
 
@@ -229,7 +227,7 @@ func (c *Client) SignAndBroadcast(
 	if err != nil {
 		return nil, err
 	}
-	txBuilder.SetGasLimit(gasLimit)
+	txBuilder.SetGasLimit(c.Config.GasLimit)
 
 	// 2) 签名（自动查询 accNum/seq）
 	address, err := c.Address(signerName)
@@ -250,7 +248,7 @@ func (c *Client) SignAndBroadcast(
 	if err != nil {
 		return nil, err
 	}
-	return c.BroadcastTx(ctx, txBytes, mode)
+	return c.BroadcastTx(ctx, txBytes, c.Config.BroadcastMode)
 }
 
 // WaitForTx 轮询等待上链（优先 gRPC GetTx）
@@ -299,15 +297,13 @@ func (c *Client) SendCoins(
 	signerName string,
 	fromAddr, toAddr sdk.AccAddress,
 	amount sdk.Coins,
-	gasLimit uint64,
-	mode txtypes.BroadcastMode,
 ) (*txtypes.BroadcastTxResponse, error) {
 	msg := &banktypes.MsgSend{
 		FromAddress: fromAddr.String(),
 		ToAddress:   toAddr.String(),
 		Amount:      amount,
 	}
-	return c.SignAndBroadcast(ctx, signerName, gasLimit, mode, msg)
+	return c.SignAndBroadcast(ctx, signerName, msg)
 }
 
 // LatestHeight 获取最新区块高度

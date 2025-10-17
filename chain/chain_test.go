@@ -49,7 +49,7 @@ func TestBroadcastTx(t *testing.T) {
 		Content: "content",
 	}
 
-	response, err := client.SignAndBroadcast(context.Background(), senderName, config.GasLimit, config.BroadcastMode, &msg)
+	response, err := client.SignAndBroadcast(context.Background(), senderName, &msg)
 	if err != nil {
 		t.Fatal(err)
 	}
