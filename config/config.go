@@ -33,19 +33,23 @@ func Has(key string) bool {
 	return cfg != nil && cfg.IsSet(key)
 }
 
-// LoadKey 将指定 key 对应的配置解析到传入的结构体中。
-// 参数 key 表示要加载的配置项名称。
-// 参数 configStru 是用于接收配置数据的结构体指针。
-// 返回值是反序列化过程中可能发生的错误。
-func LoadKey(key string, configStru interface{}) error {
+// LoadKey 从配置中加载指定键的值并将其转换为指定类型
+// 参数 key: 配置键名
+// 返回值 T: 加载的配置值
+func LoadKey[T any](key string) (T, error) {
+	var ret T
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad(key), configStru)
-		return errs.ErrConfigLoad(key)
+		logger.Error(errs.ErrConfigLoad(key))
+		return ret, errs.ErrConfigLoad(key)
 	}
-	if err := cfg.UnmarshalKey(key, configStru); err != nil {
-		return err
+	err := cfg.UnmarshalKey(key, &ret)
+	if err != nil {
+		return ret, err
 	}
-	return nil
+	if &ret == nil {
+		logger.Warn(errs.WarnConfigLoadNil(key))
+	}
+	return ret, err
 }
 
 // GetString 获取字符串类型的配置值。
