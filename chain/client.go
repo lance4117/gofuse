@@ -2,7 +2,10 @@ package chain
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
@@ -22,6 +25,7 @@ import (
 	"github.com/lance4117/gofuse/errs"
 	"github.com/lance4117/gofuse/logger"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/keepalive"
@@ -209,17 +213,24 @@ func (c *Client) EncodeTxBytes(txBuilder client.TxBuilder) ([]byte, error) {
 // BroadcastRawTx 通过 gRPC 广播已签名交易字节
 func (c *Client) BroadcastRawTx(ctx context.Context, txBytes []byte) (*txtypes.BroadcastTxResponse, error) {
 	svc := txtypes.NewServiceClient(c.grpcConn)
-	return svc.BroadcastTx(ctx, &txtypes.BroadcastTxRequest{
+	tx, err := svc.BroadcastTx(ctx, &txtypes.BroadcastTxRequest{
 		Mode:    c.Config.BroadcastMode,
 		TxBytes: txBytes,
 	})
+	if err != nil {
+		return nil, err
+	}
+	if tx.TxResponse.Code != 0 {
+		return nil, errors.New(tx.TxResponse.RawLog)
+	}
+	return tx, nil
 }
 
 // BroadcastTx  通过 gRPC 广播
 // 自动签名一步到位：构建->签名->广播
 func (c *Client) BroadcastTx(
 	ctx context.Context,
-	signerName string,
+	senderName string,
 	msgs ...sdk.Msg,
 ) (*txtypes.BroadcastTxResponse, error) {
 	// 1) 构建
@@ -230,7 +241,7 @@ func (c *Client) BroadcastTx(
 	txBuilder.SetGasLimit(c.Config.GasLimit)
 
 	// 2) 签名（自动查询 accNum/seq）
-	address, err := c.Address(signerName)
+	address, err := c.Address(senderName)
 	if err != nil {
 		return nil, err
 	}
@@ -238,7 +249,7 @@ func (c *Client) BroadcastTx(
 	if err != nil {
 		return nil, err
 	}
-	err = c.SignTxWith(signerName, txBuilder, num, seq)
+	err = c.SignTxWith(senderName, txBuilder, num, seq)
 	if err != nil {
 		return nil, err
 	}
@@ -251,26 +262,45 @@ func (c *Client) BroadcastTx(
 	return c.BroadcastRawTx(ctx, txBytes)
 }
 
-// WaitForTx 轮询等待上链（优先 gRPC GetTx）
-func (c *Client) WaitForTx(ctx context.Context, txHash string, pollInterval time.Duration) (*txtypes.GetTxResponse, error) {
-	svc := txtypes.NewServiceClient(c.grpcConn)
-	t := time.NewTicker(pollInterval)
-	defer t.Stop()
+// WaitForTx 轮询等待上链
+// timeout 例：30*time.Second；interval 例：500*time.Millisecond。
+func (c *Client) WaitForTx(ctx context.Context, txHash string, timeout, interval time.Duration) (*txtypes.GetTxResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
 
+	svc := txtypes.NewServiceClient(c.grpcConn)
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	// 统一 txhash 大写（有些工具链输出小写，但查询端习惯用大写）
+	txHash = strings.ToUpper(txHash)
+
+	var lastErr error
 	for {
+		// 先尝试查一次（避免最短 1*interval 的空转）
+		resp, err := svc.GetTx(ctx, &txtypes.GetTxRequest{Hash: txHash})
+		if err == nil && resp != nil && resp.TxResponse != nil && resp.TxResponse.Height > 0 {
+			return resp, nil
+		}
+		if err != nil {
+			// 仅对 NotFound/Unavailable/DeadlineExceeded 继续重试，其余错误直接返回
+			st, _ := status.FromError(err)
+			switch st.Code() {
+			case codes.NotFound, codes.Unavailable, codes.DeadlineExceeded:
+				lastErr = err
+			default:
+				return nil, err
+			}
+		}
+
 		select {
 		case <-ctx.Done():
-			return nil, context.DeadlineExceeded
-		case <-t.C:
-			rsp, err := svc.GetTx(ctx, &txtypes.GetTxRequest{Hash: txHash})
-			if err == nil && rsp != nil && rsp.TxResponse != nil {
-				return rsp, nil
+			if lastErr == nil {
+				lastErr = context.DeadlineExceeded
 			}
-			// 未找到通常返回 codes.NotFound，忽略并继续轮询
-			if st, ok := status.FromError(err); ok && st.Message() != "" {
-				// 其他严重错误提前返回
-				// 你也可以根据 st.Code() == codes.NotFound 细分
-			}
+			return nil, fmt.Errorf("wait tx timeout: %s not found within %v: %w", txHash, timeout, lastErr)
+		case <-ticker.C:
+			// loop
 		}
 	}
 }
