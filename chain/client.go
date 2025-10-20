@@ -206,22 +206,22 @@ func (c *Client) EncodeTxBytes(txBuilder client.TxBuilder) ([]byte, error) {
 	return c.ClientCtx.TxConfig.TxEncoder()(txBuilder.GetTx())
 }
 
-// BroadcastTx 通过 gRPC 广播（支持 ASYNC/SYNC/BLOCK）
-func (c *Client) BroadcastTx(ctx context.Context, txBytes []byte, mode txtypes.BroadcastMode) (*txtypes.BroadcastTxResponse, error) {
+// BroadcastRawTx 通过 gRPC 广播已签名交易字节
+func (c *Client) BroadcastRawTx(ctx context.Context, txBytes []byte) (*txtypes.BroadcastTxResponse, error) {
 	svc := txtypes.NewServiceClient(c.grpcConn)
 	return svc.BroadcastTx(ctx, &txtypes.BroadcastTxRequest{
-		Mode:    mode,
+		Mode:    c.Config.BroadcastMode,
 		TxBytes: txBytes,
 	})
 }
 
-// SignAndBroadcast 一步到位：构建->设置->签名->广播
-func (c *Client) SignAndBroadcast(
+// BroadcastTx  通过 gRPC 广播
+// 自动签名一步到位：构建->签名->广播
+func (c *Client) BroadcastTx(
 	ctx context.Context,
 	signerName string,
 	msgs ...sdk.Msg,
 ) (*txtypes.BroadcastTxResponse, error) {
-
 	// 1) 构建
 	txBuilder, err := c.TxBuilder(msgs...)
 	if err != nil {
@@ -248,7 +248,7 @@ func (c *Client) SignAndBroadcast(
 	if err != nil {
 		return nil, err
 	}
-	return c.BroadcastTx(ctx, txBytes, c.Config.BroadcastMode)
+	return c.BroadcastRawTx(ctx, txBytes)
 }
 
 // WaitForTx 轮询等待上链（优先 gRPC GetTx）
@@ -303,7 +303,7 @@ func (c *Client) SendCoins(
 		ToAddress:   toAddr.String(),
 		Amount:      amount,
 	}
-	return c.SignAndBroadcast(ctx, signerName, msg)
+	return c.BroadcastTx(ctx, signerName, msg)
 }
 
 // LatestHeight 获取最新区块高度

@@ -37,19 +37,12 @@ func TestBroadcastTx(t *testing.T) {
 
 	senderName := "alice"
 
-	// 从名字找到address
-	address, err := client.Address(senderName)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	msg := blog.MsgCreateBlog{
-		Creator: address.String(),
 		Title:   "title",
 		Content: "content",
 	}
 
-	response, err := client.SignAndBroadcast(context.Background(), senderName, &msg)
+	response, err := client.BroadcastTx(context.Background(), senderName, &msg)
 	if err != nil {
 		t.Fatal(err)
 	}
