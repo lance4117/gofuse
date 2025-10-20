@@ -5,15 +5,16 @@ import (
 	"testing"
 	"time"
 
-	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/lance4117/blogd/api/blog/blog"
 	blogmodules "github.com/lance4117/blogd/x/blog/module"
 	"github.com/lance4117/gofuse/gen"
 )
 
+const HomeDir = "D:\\000_MyLibrary\\100_code\\142_blogd\\blogdata"
+
 func TestNewClient(t *testing.T) {
 	// blogmodules作为演示的区块链程序
-	config := DefaultConfig("blog", "D:\\code\\blogd\\blogdata", blogmodules.AppModule{})
+	config := DefaultConfig("blog", HomeDir, blogmodules.AppModule{})
 
 	client, err := New(config)
 	if err != nil {
@@ -35,9 +36,7 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestBroadcastTx(t *testing.T) {
-	config := DefaultConfig("blog", "D:\\code\\blogd\\blogdata", blogmodules.AppModule{})
-	config.BroadcastMode = txtypes.BroadcastMode_BROADCAST_MODE_SYNC
-	config.GasLimit = 200000000
+	config := DefaultConfig("blog", HomeDir, blogmodules.AppModule{})
 
 	client, err := New(config)
 	if err != nil {
@@ -70,4 +69,45 @@ func TestBroadcastTx(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log(tx.String())
+}
+
+func TestBank(t *testing.T) {
+	config := DefaultConfig("blog", HomeDir, blogmodules.AppModule{})
+
+	client, err := New(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	aliceAddress, err := client.Address("alice")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	acc1Address, err := client.Address("acc1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	coins, err := client.SendCoins(context.Background(), "alice", aliceAddress, acc1Address, "10stake")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(coins.String())
+
+	// 等待交易上链
+	tx, err := client.WaitForTx(context.Background(), coins.TxResponse.TxHash, time.Second*15, 1*time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(tx.String())
+
+	balance, err := client.Balance(context.Background(), aliceAddress, "stake")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(balance.String())
 }

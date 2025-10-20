@@ -322,16 +322,26 @@ func (c *Client) Balance(ctx context.Context, addr sdk.AccAddress, denom string)
 }
 
 // SendCoins 使用指定 signer 从 from -> to 转账
+// amounts: ["10stake","10token"]
 func (c *Client) SendCoins(
 	ctx context.Context,
 	signerName string,
 	fromAddr, toAddr sdk.AccAddress,
-	amount sdk.Coins,
+	amounts ...string,
 ) (*txtypes.BroadcastTxResponse, error) {
+	if len(amounts) == 0 {
+		return nil, fmt.Errorf("empty amounts")
+	}
+	// 合并成 "10stake,2uatom" 后一次性解析
+	s := strings.Join(amounts, ",")
+	coins, err := sdk.ParseCoinsNormalized(s)
+	if err != nil {
+		return nil, fmt.Errorf("parse coins: %w", err)
+	}
 	msg := &banktypes.MsgSend{
 		FromAddress: fromAddr.String(),
 		ToAddress:   toAddr.String(),
-		Amount:      amount,
+		Amount:      coins,
 	}
 	return c.BroadcastTx(ctx, signerName, msg)
 }
