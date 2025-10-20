@@ -330,13 +330,13 @@ func (c *Client) SendCoins(
 	amounts ...string,
 ) (*txtypes.BroadcastTxResponse, error) {
 	if len(amounts) == 0 {
-		return nil, fmt.Errorf("empty amounts")
+		return nil, errs.ErrNil
 	}
 	// 合并成 "10stake,2uatom" 后一次性解析
 	s := strings.Join(amounts, ",")
 	coins, err := sdk.ParseCoinsNormalized(s)
 	if err != nil {
-		return nil, fmt.Errorf("parse coins: %w", err)
+		return nil, err
 	}
 	msg := &banktypes.MsgSend{
 		FromAddress: fromAddr.String(),
