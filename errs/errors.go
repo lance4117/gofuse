@@ -2,23 +2,33 @@ package errs
 
 import (
 	"errors"
-	"fmt"
 )
 
 var (
-	ErrNil                      = errors.New(" error nil ")
-	ErrFileReaderNotInitialized = errors.New(" error file reader not initialized ")
-	ErrFileWriteNotInitialized  = errors.New(" error file writer not initialized ")
-	ErrConfigRead               = errors.New(" error reading config ")
-	ErrNeedPointer              = errors.New(" error must be pointer ")
-	ErrNewStoreEngineFail       = errors.New(" error init storage engine fail ")
-	ErrGrpcConnFail             = errors.New(" error ping grpc connection fail ")
+	ErrNeedPointer = errors.New(" must be pointer ")
 )
 
-func ErrConfigLoad(config string) error {
-	return errors.New(fmt.Sprintf(" error loading config %s ", config))
-}
+// fileio
+var (
+	ErrFileReaderNotInitialized = errors.New(" file reader not initialized ")
+	ErrFileWriteNotInitialized  = errors.New(" file writer not initialized ")
+)
 
-func ErrNoBalance(address, denom string) error {
-	return errors.New(fmt.Sprintf("%s has no %s balance returned", address, denom))
-}
+// config
+var (
+	ErrConfigRead = errors.New(" reading config ")
+	ErrConfigLoad = errors.New(" reading loading ")
+)
+
+// store
+var (
+	ErrNewStoreEngineFail = errors.New(" init storage engine fail ")
+	ErrKeyNotFound        = errors.New(" key not found ")
+)
+
+// chain
+var (
+	ErrNoBalance    = errors.New(" no balance ")
+	ErrGrpcConnFail = errors.New(" ping grpc connection fail ")
+	ErrNoAmount     = errors.New(" no amount ")
+)

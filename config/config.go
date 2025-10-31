@@ -39,8 +39,7 @@ func Has(key string) bool {
 func LoadKey[T any](key string) (T, error) {
 	var ret T
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad(key))
-		return ret, errs.ErrConfigLoad(key)
+		return ret, errs.ErrConfigLoad
 	}
 	err := cfg.UnmarshalKey(key, &ret)
 	if err != nil {
@@ -57,7 +56,7 @@ func LoadKey[T any](key string) (T, error) {
 // 返回值是对应的字符串值；如果配置未初始化或不存在则记录错误日志并返回空字符串。
 func GetString(key string) string {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad(key), key)
+		logger.Error(errs.ErrConfigLoad, key)
 		return ""
 	}
 	return cfg.GetString(key)
@@ -82,7 +81,7 @@ func GetStringOr(key, def string) string {
 // 返回值是对应的整数值；如果配置未初始化或出错则记录错误日志并返回 0。
 func GetInt(key string) int {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad(key), key)
+		logger.Error(errs.ErrConfigLoad, key)
 		return 0
 	}
 	return cfg.GetInt(key)
@@ -107,7 +106,7 @@ func GetIntOr(key string, def int) int {
 // 返回值是对应的 int64 值；如果配置未初始化或出错则记录错误日志并返回 0。
 func GetInt64(key string) int64 {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad(key), key)
+		logger.Error(errs.ErrConfigLoad, key)
 		return 0
 	}
 	return cfg.GetInt64(key)
@@ -132,7 +131,7 @@ func GetInt64Or(key string, def int64) int64 {
 // 返回值是对应的 uint64 值；如果配置未初始化或出错则记录错误日志并返回 0。
 func GetUint64(key string) uint64 {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad(key), key)
+		logger.Error(errs.ErrConfigLoad, key)
 		return 0
 	}
 	return cfg.GetUint64(key)
@@ -157,7 +156,7 @@ func GetUint64Or(key string, def uint64) uint64 {
 // 返回值是对应的 float64 值；如果配置未初始化或出错则记录错误日志并返回 0。
 func GetFloat64(key string) float64 {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad(key), key)
+		logger.Error(errs.ErrConfigLoad, key)
 		return 0
 	}
 	return cfg.GetFloat64(key)
@@ -182,7 +181,7 @@ func GetFloat64Or(key string, def float64) float64 {
 // 返回值是对应的时间间隔值；如果配置未初始化则记录错误日志并返回 0。
 func GetDuration(key string) time.Duration {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad(key))
+		logger.Error(errs.ErrConfigLoad)
 		return 0
 	}
 	return cfg.GetDuration(key)
@@ -208,7 +207,7 @@ func GetDurationOr(key string, def time.Duration) time.Duration {
 // 返回值是对应的布尔值；如果配置未初始化则记录错误日志并返回 false。
 func GetBool(key string) bool {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad(key), key)
+		logger.Error(errs.ErrConfigLoad, key)
 		return false
 	}
 	return cfg.GetBool(key)

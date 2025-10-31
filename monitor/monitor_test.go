@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lance4117/gofuse/errs"
 	"github.com/lance4117/gofuse/fileio"
 	"github.com/lance4117/gofuse/logger"
 	"github.com/lance4117/gofuse/times"
@@ -20,7 +19,7 @@ func TestMonitor(t *testing.T) {
 		return
 	}
 	if pids == nil {
-		logger.Error(errs.ErrNil)
+		logger.Fatal("pid is nil")
 		return
 	}
 	pid := pids[0]

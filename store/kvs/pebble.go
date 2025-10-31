@@ -1,7 +1,7 @@
 package kvs
 
 import (
-	"io"
+	"errors"
 
 	"github.com/cockroachdb/pebble"
 	"github.com/lance4117/gofuse/errs"
@@ -20,9 +20,9 @@ type PebbleKV struct {
 }
 
 func DefaultPebbleConfig(dirname string) PebbleConfig {
-	var options *pebble.Options
-	options = options.EnsureDefaults()
-	return PebbleConfig{dirname, options}
+	opts := &pebble.Options{}
+	opts.EnsureDefaults()
+	return PebbleConfig{dirname, opts}
 }
 
 var NewPebbleSync = once.DoWithParam(func(config PebbleConfig) *PebbleKV {
@@ -50,15 +50,18 @@ func (kv *PebbleKV) Put(key string, val []byte) error {
 }
 
 func (kv *PebbleKV) Get(key string) ([]byte, error) {
-	get, closer, err := kv.db.Get([]byte(key))
-	defer func(closer io.Closer) {
-		if closer == nil {
-			return
+	b, closer, err := kv.db.Get([]byte(key))
+	if err != nil {
+		if errors.Is(err, pebble.ErrNotFound) {
+			return nil, errs.ErrKeyNotFound
 		}
-		closer.Close()
-
-	}(closer)
-	return get, err
+		return nil, err
+	}
+	defer closer.Close()
+	// 必须复制
+	out := make([]byte, len(b))
+	copy(out, b)
+	return out, nil
 }
 func (kv *PebbleKV) Del(key string) error {
 	return kv.db.Delete([]byte(key), kv.options)

@@ -316,7 +316,7 @@ func (c *Client) Balance(ctx context.Context, addr sdk.AccAddress, denom string)
 		return sdk.Coin{}, err
 	}
 	if rsp.Balance == nil {
-		return sdk.Coin{}, errs.ErrNoBalance(addr.String(), denom)
+		return sdk.Coin{}, errs.ErrNoBalance
 	}
 	return *rsp.Balance, nil
 }
@@ -330,7 +330,7 @@ func (c *Client) SendCoins(
 	amounts ...string,
 ) (*txtypes.BroadcastTxResponse, error) {
 	if len(amounts) == 0 {
-		return nil, errs.ErrNil
+		return nil, errs.ErrNoAmount
 	}
 	// 合并成 "10stake,2uatom" 后一次性解析
 	s := strings.Join(amounts, ",")
