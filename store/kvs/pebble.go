@@ -1,6 +1,8 @@
-package kvStore
+package kvs
 
 import (
+	"io"
+
 	"github.com/cockroachdb/pebble"
 	"github.com/lance4117/gofuse/errs"
 	"github.com/lance4117/gofuse/logger"
@@ -49,7 +51,13 @@ func (kv *PebbleKV) Put(key string, val []byte) error {
 
 func (kv *PebbleKV) Get(key string) ([]byte, error) {
 	get, closer, err := kv.db.Get([]byte(key))
-	defer closer.Close()
+	defer func(closer io.Closer) {
+		if closer == nil {
+			return
+		}
+		closer.Close()
+
+	}(closer)
 	return get, err
 }
 func (kv *PebbleKV) Del(key string) error {

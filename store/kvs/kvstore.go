@@ -1,4 +1,4 @@
-package kvStore
+package kvs
 
 type KVStore interface {
 	Put(key string, val []byte) error
