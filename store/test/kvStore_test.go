@@ -8,13 +8,39 @@ import (
 
 func TestPebble(t *testing.T) {
 	config := kvs.DefaultPebbleConfig("./data")
-	peb := kvs.NewPebbleNoSync(config)
+	peb := kvs.NewPebbleKV(config)
+
+	has, err := peb.Has("a")
+	if err != nil {
+		t.Error(err)
+	}
+
+	t.Log(has)
 
 	get, err := peb.Get("a")
+	if err != nil {
+		t.Error(err)
+	}
+
+	t.Log(get)
+
+	err = peb.Put("test", []byte("foo"))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Log(get)
+	has, err = peb.Has("test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(has)
+
+	data, err := peb.Get("test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(string(data))
 
 }
