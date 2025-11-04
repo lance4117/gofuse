@@ -23,6 +23,7 @@ var (
 // store
 var (
 	ErrNewStoreEngineFail = errors.New(" init storage engine fail ")
+	ErrKVStoreBackend     = errors.New(" backend not found ")
 	ErrKeyNotFound        = errors.New(" key not found ")
 )
 

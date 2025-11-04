@@ -7,8 +7,11 @@ import (
 )
 
 func TestPebble(t *testing.T) {
-	config := kvs.DefaultPebbleConfig("./data")
-	peb := kvs.NewPebbleKV(config)
+	config := kvs.NewPebbleConfig("./data")
+	peb, err := kvs.NewPebbleKV(config)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	has, err := peb.Has("a")
 	if err != nil {
@@ -43,4 +46,34 @@ func TestPebble(t *testing.T) {
 
 	t.Log(string(data))
 
+}
+
+func TestRedis(t *testing.T) {
+	config := kvs.NewRedisConfig("localhost:6379", "", 0, 100)
+	store, err := kvs.NewRedisKV(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	get, err := store.Get("ok")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(get)
+
+	err = store.Put("foo", []byte("test"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	has, err := store.Has("foo")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(has)
+
+	data, err := store.Get("foo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(string(data))
 }
