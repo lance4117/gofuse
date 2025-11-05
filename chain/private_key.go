@@ -14,11 +14,11 @@ const (
 
 // KeyRing 包含区块链账户的密钥信息
 type KeyRing struct {
-	Address  string             `json:"address"`  //cosmos地址
-	Mnemonic string             `json:"mnemonic"` //24词助记词
-	Private  *secp256k1.PrivKey `json:"private"`  //私钥
-	Public   *secp256k1.PubKey  `json:"public"`   //公钥
-	HDPath   string             `json:"hd_path"`  //HD路径
+	Address  string             `json:"address"`  // cosmos地址
+	Mnemonic string             `json:"mnemonic"` // 24词助记词
+	Private  *secp256k1.PrivKey `json:"private"`  // 私钥
+	Public   *secp256k1.PubKey  `json:"public"`   // 公钥
+	HDPath   string             `json:"hd_path"`  // HD路径
 }
 
 // NewDefaultKey 创建一个使用默认前缀和HD路径的新密钥
