@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"io"
 
+	"github.com/lance4117/gofuse/errs"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -22,7 +23,7 @@ type Encryption struct {
 	Iterations  int // 遍历次数
 	Parallelism int // 并行数 0~255
 	SaltLength  int // 盐长度
-	KeyLength   int
+	KeyLength   int // 密钥长度为16,24,32
 }
 
 // New 获取默认配置
@@ -79,6 +80,11 @@ func (s Encryption) DecryptArgon2id(password string, data EncryptedData) ([]byte
 
 // EncryptAESGCM AESGCM对称加密
 func (s Encryption) EncryptAESGCM(key, data []byte) ([]byte, error) {
+	// 确保密钥的长度符合 AES 要求（16、24 或 32 字节）
+	if len(key) != 16 && len(key) != 24 && len(key) != 32 {
+		// 如果密钥长度不对，可以调整为默认的 32 字节
+		return nil, errs.ErrAESKeyLength
+	}
 	gcm, err := getGCMByKey(key)
 	if err != nil {
 		return nil, err

@@ -23,7 +23,6 @@ var (
 // store
 var (
 	ErrNewStoreEngineFail = errors.New(" init storage engine fail ")
-	ErrKVStoreBackend     = errors.New(" backend not found ")
 	ErrKeyNotFound        = errors.New(" key not found ")
 )
 
@@ -32,4 +31,8 @@ var (
 	ErrNoBalance    = errors.New(" no balance ")
 	ErrGrpcConnFail = errors.New(" ping grpc connection fail ")
 	ErrNoAmount     = errors.New(" no amount ")
+)
+
+var (
+	ErrAESKeyLength = errors.New(" key length must be 16,24,32")
 )
