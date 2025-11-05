@@ -1,6 +1,10 @@
 package gen
 
 import (
+	"math/rand/v2"
+	"time"
+
+	"github.com/lance4117/gofuse/codec"
 	"github.com/lance4117/gofuse/once"
 	sf "github.com/sony/sonyflake/v2"
 )
@@ -16,4 +20,20 @@ func NewId() (int64, error) {
 		return 0, nil
 	}
 	return snowflake.NextID()
+}
+
+// ShortID 生成可读性强的 22~26 位 base62 短 ID（时间戳 + 随机）
+func ShortID() string {
+	b := make([]byte, 20)
+	// 8 字节时间戳（毫秒） + 12 字节随机
+	ts := time.Now().UnixMilli()
+	for i := 7; i >= 0; i-- {
+		b[i] = byte(ts & 0xff)
+		ts >>= 8
+	}
+	for i := 8; i < 20; i++ {
+		b[i] = byte(rand.IntN(256))
+	}
+	// base62 编码
+	return codec.B62Encode(b)
 }
