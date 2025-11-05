@@ -11,13 +11,11 @@ func TestId(t *testing.T) {
 }
 
 func TestArticle(t *testing.T) {
-	t.Log(Letters(50))
-
 	article := NewArticle(3, 20)
 	t.Log(article.Title)
 	t.Log(article.Author)
 	t.Log(article.Summary)
-	t.Log(article.contents)
+	t.Log(article.Contents)
 }
 
 func TestObjs(t *testing.T) {
@@ -32,8 +30,9 @@ func TestObjs(t *testing.T) {
 }
 
 func TestLettersAndNumbers(t *testing.T) {
-	numbers := LettersAndNumbers(10)
+	t.Log(Letters(10))
 
+	numbers := LettersAndNumbers(10)
 	t.Log(numbers)
 }
 

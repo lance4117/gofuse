@@ -10,20 +10,20 @@ import (
 	"golang.org/x/text/language"
 )
 
-// Article 生成“文章”：标题 + 多段正文
 type Article struct {
-	Title    string
-	Author   string
-	Summary  string
-	contents []string
+	Title    string   `json:"title,omitempty" yaml:"title"`
+	Author   string   `json:"author,omitempty" yaml:"author"`
+	Summary  string   `json:"summary,omitempty" yaml:"summary"`
+	Contents []string `json:"contents,omitempty" yaml:"contents"`
 }
 
+// NewArticle 生成文章, 输入 段落数量,句子词数
 func NewArticle(paragraphs, sentenceWords int) Article {
 	// 默认3段
 	if paragraphs <= 0 {
 		paragraphs = 3
 	}
-	// 默认一句话10个词
+	// 默认一句10个词
 	if sentenceWords <= 0 {
 		sentenceWords = 10
 	}
@@ -38,7 +38,7 @@ func NewArticle(paragraphs, sentenceWords int) Article {
 		Title:    title,
 		Author:   author,
 		Summary:  summary,
-		contents: paras,
+		Contents: paras,
 	}
 }
 
