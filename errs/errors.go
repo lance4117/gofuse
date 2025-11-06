@@ -16,8 +16,9 @@ var (
 
 // config
 var (
-	ErrConfigRead = errors.New(" reading config ")
-	ErrConfigLoad = errors.New(" reading loading ")
+	ErrConfigRead = errors.New(" reading config fail ")
+	ErrConfigLoad = errors.New(" loading config fail ")
+	ErrConfigNil  = errors.New(" config is nil ")
 )
 
 // store

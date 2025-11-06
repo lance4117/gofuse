@@ -5,26 +5,36 @@ import (
 
 	"github.com/lance4117/gofuse/errs"
 	"github.com/lance4117/gofuse/logger"
-	"github.com/lance4117/gofuse/once"
 	"github.com/spf13/viper"
 )
 
 var cfg *viper.Viper
+var (
+	initialized bool
+	defaultPath = "./config.yaml"
+)
 
-// Init 是一个初始化配置的函数，使用 once.DoWithParam 确保只执行一次。
+// Init 通过指定文件位置初始化配置
 // 参数 path 指定配置文件路径，默认为 "./config.yaml"。
-// 如果读取配置失败会调用 logger.Fatal 记录致命错误并终止程序。
-var Init = once.DoWithParam(func(path string) struct{} {
+func Init(path string) error {
+	if initialized {
+		return errs.ErrConfigNil
+	}
+
 	if path == "" {
-		path = "./config.yaml"
+		path = defaultPath
 	}
-	cfg = viper.New()
-	cfg.SetConfigFile(path)
-	if err := cfg.ReadInConfig(); err != nil {
-		logger.Fatal(errs.ErrConfigRead, err)
+
+	v := viper.New()
+	v.SetConfigFile(path)
+	if err := v.ReadInConfig(); err != nil {
+		return err
 	}
-	return struct{}{}
-})
+	// 读取到config文件后才赋值
+	cfg = v
+	initialized = true
+	return nil
+}
 
 // Has 判断指定 key 是否存在于配置中。
 // 参数 key 表示要查询的配置项名称。
@@ -45,9 +55,7 @@ func LoadKey[T any](key string) (T, error) {
 	if err != nil {
 		return ret, err
 	}
-	if &ret == nil {
-		logger.Warn(errs.WarnConfigLoadNil(key))
-	}
+
 	return ret, err
 }
 
@@ -67,13 +75,10 @@ func GetString(key string) string {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetStringOr(key, def string) string {
-	if cfg == nil {
+	if cfg == nil || !cfg.IsSet(key) {
 		return def
 	}
-	if v := cfg.GetString(key); v != "" {
-		return v
-	}
-	return def
+	return cfg.GetString(key)
 }
 
 // GetInt 获取整数类型的配置值。
@@ -92,10 +97,7 @@ func GetInt(key string) int {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetIntOr(key string, def int) int {
-	if cfg == nil {
-		return def
-	}
-	if !cfg.IsSet(key) {
+	if cfg == nil || !cfg.IsSet(key) {
 		return def
 	}
 	return cfg.GetInt(key)
@@ -117,10 +119,7 @@ func GetInt64(key string) int64 {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetInt64Or(key string, def int64) int64 {
-	if cfg == nil {
-		return def
-	}
-	if !cfg.IsSet(key) {
+	if cfg == nil || !cfg.IsSet(key) {
 		return def
 	}
 	return cfg.GetInt64(key)
@@ -142,10 +141,7 @@ func GetUint64(key string) uint64 {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetUint64Or(key string, def uint64) uint64 {
-	if cfg == nil {
-		return def
-	}
-	if !cfg.IsSet(key) {
+	if cfg == nil || !cfg.IsSet(key) {
 		return def
 	}
 	return cfg.GetUint64(key)
@@ -167,10 +163,7 @@ func GetFloat64(key string) float64 {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetFloat64Or(key string, def float64) float64 {
-	if cfg == nil {
-		return def
-	}
-	if !cfg.IsSet(key) {
+	if cfg == nil || !cfg.IsSet(key) {
 		return def
 	}
 	return cfg.GetFloat64(key)
@@ -181,7 +174,7 @@ func GetFloat64Or(key string, def float64) float64 {
 // 返回值是对应的时间间隔值；如果配置未初始化则记录错误日志并返回 0。
 func GetDuration(key string) time.Duration {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad)
+		logger.Error(errs.ErrConfigLoad, key)
 		return 0
 	}
 	return cfg.GetDuration(key)
@@ -195,11 +188,7 @@ func GetDurationOr(key string, def time.Duration) time.Duration {
 	if cfg == nil || !cfg.IsSet(key) {
 		return def
 	}
-	d := cfg.GetDuration(key)
-	if d == 0 {
-		return def
-	}
-	return d
+	return cfg.GetDuration(key)
 }
 
 // GetBool 获取布尔类型的配置值。
@@ -216,5 +205,9 @@ func GetBool(key string) bool {
 // All 获取所有配置项。
 // 返回值是一个包含所有配置键值对的映射。
 func All() map[string]any {
+	if cfg == nil {
+		logger.Error(errs.ErrConfigNil)
+		return nil
+	}
 	return cfg.AllSettings()
 }

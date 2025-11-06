@@ -55,7 +55,7 @@ func TestBroadcastTx(t *testing.T) {
 	msg := blog.MsgCreateBlog{
 		Creator: address.String(),
 		Title:   "title",
-		Content: gen.NewArticle(1, 1, 100),
+		Content: gen.Sentence(100),
 	}
 
 	response, err := client.BroadcastTx(context.Background(), senderName, &msg)
