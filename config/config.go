@@ -10,14 +10,14 @@ import (
 
 var cfg *viper.Viper
 var (
-	initialized bool
+	Initialized bool
 	defaultPath = "./config.yaml"
 )
 
 // Init 通过指定文件位置初始化配置
 // 参数 path 指定配置文件路径，默认为 "./config.yaml"。
 func Init(path string) error {
-	if initialized {
+	if Initialized {
 		return nil
 	}
 
@@ -32,7 +32,7 @@ func Init(path string) error {
 	}
 	// 读取到config文件后才赋值
 	cfg = v
-	initialized = true
+	Initialized = true
 	return nil
 }
 
