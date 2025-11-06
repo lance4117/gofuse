@@ -18,7 +18,7 @@ var (
 // 参数 path 指定配置文件路径，默认为 "./config.yaml"。
 func Init(path string) error {
 	if initialized {
-		return errs.ErrConfigNil
+		return nil
 	}
 
 	if path == "" {
@@ -64,7 +64,7 @@ func LoadKey[T any](key string) (T, error) {
 // 返回值是对应的字符串值；如果配置未初始化或不存在则记录错误日志并返回空字符串。
 func GetString(key string) string {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigNil, key)
 		return ""
 	}
 	return cfg.GetString(key)
@@ -75,7 +75,7 @@ func GetString(key string) string {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetStringOr(key, def string) string {
-	if cfg == nil || !cfg.IsSet(key) {
+	if Has(key) {
 		return def
 	}
 	return cfg.GetString(key)
@@ -86,7 +86,7 @@ func GetStringOr(key, def string) string {
 // 返回值是对应的整数值；如果配置未初始化或出错则记录错误日志并返回 0。
 func GetInt(key string) int {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigNil, key)
 		return 0
 	}
 	return cfg.GetInt(key)
@@ -97,7 +97,7 @@ func GetInt(key string) int {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetIntOr(key string, def int) int {
-	if cfg == nil || !cfg.IsSet(key) {
+	if Has(key) {
 		return def
 	}
 	return cfg.GetInt(key)
@@ -108,7 +108,7 @@ func GetIntOr(key string, def int) int {
 // 返回值是对应的 int64 值；如果配置未初始化或出错则记录错误日志并返回 0。
 func GetInt64(key string) int64 {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigNil, key)
 		return 0
 	}
 	return cfg.GetInt64(key)
@@ -119,7 +119,7 @@ func GetInt64(key string) int64 {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetInt64Or(key string, def int64) int64 {
-	if cfg == nil || !cfg.IsSet(key) {
+	if Has(key) {
 		return def
 	}
 	return cfg.GetInt64(key)
@@ -130,7 +130,7 @@ func GetInt64Or(key string, def int64) int64 {
 // 返回值是对应的 uint64 值；如果配置未初始化或出错则记录错误日志并返回 0。
 func GetUint64(key string) uint64 {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigNil, key)
 		return 0
 	}
 	return cfg.GetUint64(key)
@@ -141,7 +141,7 @@ func GetUint64(key string) uint64 {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetUint64Or(key string, def uint64) uint64 {
-	if cfg == nil || !cfg.IsSet(key) {
+	if Has(key) {
 		return def
 	}
 	return cfg.GetUint64(key)
@@ -152,7 +152,7 @@ func GetUint64Or(key string, def uint64) uint64 {
 // 返回值是对应的 float64 值；如果配置未初始化或出错则记录错误日志并返回 0。
 func GetFloat64(key string) float64 {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigNil, key)
 		return 0
 	}
 	return cfg.GetFloat64(key)
@@ -163,7 +163,7 @@ func GetFloat64(key string) float64 {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetFloat64Or(key string, def float64) float64 {
-	if cfg == nil || !cfg.IsSet(key) {
+	if Has(key) {
 		return def
 	}
 	return cfg.GetFloat64(key)
@@ -174,7 +174,7 @@ func GetFloat64Or(key string, def float64) float64 {
 // 返回值是对应的时间间隔值；如果配置未初始化则记录错误日志并返回 0。
 func GetDuration(key string) time.Duration {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigNil, key)
 		return 0
 	}
 	return cfg.GetDuration(key)
@@ -185,7 +185,7 @@ func GetDuration(key string) time.Duration {
 // 参数 def 表示当配置项不存在或为零值时返回的默认值。
 // 返回值是配置值或默认值。
 func GetDurationOr(key string, def time.Duration) time.Duration {
-	if cfg == nil || !cfg.IsSet(key) {
+	if Has(key) {
 		return def
 	}
 	return cfg.GetDuration(key)
@@ -196,7 +196,7 @@ func GetDurationOr(key string, def time.Duration) time.Duration {
 // 返回值是对应的布尔值；如果配置未初始化则记录错误日志并返回 false。
 func GetBool(key string) bool {
 	if cfg == nil {
-		logger.Error(errs.ErrConfigLoad, key)
+		logger.Error(errs.ErrConfigNil, key)
 		return false
 	}
 	return cfg.GetBool(key)
