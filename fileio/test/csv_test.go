@@ -1,10 +1,11 @@
-package fileio
+package test
 
 import (
 	"fmt"
 	"os"
 	"testing"
 
+	"github.com/lance4117/gofuse/fileio"
 	"github.com/lance4117/gofuse/times"
 )
 
@@ -13,7 +14,7 @@ func TestCSVWriter(t *testing.T) {
 	defer os.Remove(filename) // 清理测试文件
 
 	// 创建CSV写入器
-	writer, err := NewCSVWriter(filename)
+	writer, err := fileio.NewCSVWriter(filename)
 	if err != nil {
 		t.Fatalf("Failed to create CSV writer: %v", err)
 	}
@@ -45,7 +46,7 @@ func TestCSVReader(t *testing.T) {
 	defer os.Remove(filename) // 清理测试文件
 
 	// 先创建测试文件
-	writer, err := NewCSVWriter(filename)
+	writer, err := fileio.NewCSVWriter(filename)
 	if err != nil {
 		t.Fatalf("Failed to create CSV writer: %v", err)
 	}
@@ -66,7 +67,7 @@ func TestCSVReader(t *testing.T) {
 	writer.Close()
 
 	// 读取文件
-	reader, err := NewCSVReader(filename)
+	reader, err := fileio.NewCSVReader(filename)
 	if err != nil {
 		t.Fatalf("Failed to create CSV reader: %v", err)
 	}
@@ -90,9 +91,9 @@ func TestTableWriterInterface(t *testing.T) {
 	defer os.Remove(filename)
 
 	// 测试接口实现
-	var writer TableWriter
+	var writer fileio.TableWriter
 	var err error
-	writer, err = NewCSVWriter(filename)
+	writer, err = fileio.NewCSVWriter(filename)
 	if err != nil {
 		t.Fatalf("Failed to create TableWriter: %v", err)
 	}
@@ -116,15 +117,15 @@ func TestTableReaderInterface(t *testing.T) {
 	defer os.Remove(filename)
 
 	// 创建测试文件
-	writer, _ := NewCSVWriter(filename)
+	writer, _ := fileio.NewCSVWriter(filename)
 	writer.Write([]string{"Header1", "Header2"})
 	writer.Write([]string{"Value1", "Value2"})
 	writer.Close()
 
 	// 测试接口实现
-	var reader TableReader
+	var reader fileio.TableReader
 	var err error
-	reader, err = NewCSVReader(filename)
+	reader, err = fileio.NewCSVReader(filename)
 	if err != nil {
 		t.Fatalf("Failed to create TableReader: %v", err)
 	}
@@ -147,7 +148,7 @@ func TestCSVWriterBatchPerformance(t *testing.T) {
 	filename := fmt.Sprintf("test-batch-%d.csv", times.NowMilli())
 	defer os.Remove(filename)
 
-	writer, err := NewCSVWriter(filename)
+	writer, err := fileio.NewCSVWriter(filename)
 	if err != nil {
 		t.Fatalf("Failed to create CSV writer: %v", err)
 	}
@@ -182,7 +183,7 @@ func TestCSVReaderRowByRow(t *testing.T) {
 	defer os.Remove(filename)
 
 	// 创建测试文件
-	writer, _ := NewCSVWriter(filename)
+	writer, _ := fileio.NewCSVWriter(filename)
 	writer.Write([][]string{
 		{"Name", "Age"},
 		{"Alice", "25"},
@@ -192,7 +193,7 @@ func TestCSVReaderRowByRow(t *testing.T) {
 	writer.Close()
 
 	// 逐行读取
-	reader, err := NewCSVReader(filename)
+	reader, err := fileio.NewCSVReader(filename)
 	if err != nil {
 		t.Fatalf("Failed to create reader: %v", err)
 	}
@@ -230,7 +231,7 @@ func TestCSVReaderRowByRow(t *testing.T) {
 
 // TestCSVReaderInvalidFile 测试读取不存在的文件
 func TestCSVReaderInvalidFile(t *testing.T) {
-	_, err := NewCSVReader("nonexistent-file.csv")
+	_, err := fileio.NewCSVReader("nonexistent-file.csv")
 	if err == nil {
 		t.Fatal("Expected error for nonexistent file, got nil")
 	}
@@ -242,7 +243,7 @@ func TestCSVWriterFlushControl(t *testing.T) {
 	filename := fmt.Sprintf("test-flush-%d.csv", times.NowMilli())
 	defer os.Remove(filename)
 
-	writer, err := NewCSVWriter(filename)
+	writer, err := fileio.NewCSVWriter(filename)
 	if err != nil {
 		t.Fatalf("Failed to create writer: %v", err)
 	}
@@ -266,7 +267,7 @@ func TestCSVWriterFlushControl(t *testing.T) {
 	}
 
 	// 验证文件内容
-	reader, _ := NewCSVReader(filename)
+	reader, _ := fileio.NewCSVReader(filename)
 	defer reader.Close()
 	data, _ := reader.ReadAll()
 
