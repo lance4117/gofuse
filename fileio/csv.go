@@ -50,42 +50,56 @@ func (w *CSVWriter) WriteRow(values []string) error {
 	if w.writer == nil {
 		return errs.ErrFileWriteNotInitialized
 	}
-	if err := w.writer.Write(values); err != nil {
-		return err
-	}
-	w.writer.Flush()
-	return w.writer.Error()
+	return w.writer.Write(values)
 }
 
 // Write 通用写入接口实现，支持 []string 或 [][]string
 func (w *CSVWriter) Write(data any) error {
 	switch v := data.(type) {
 	case []string:
-		return w.WriteRow(v)
+		if err := w.WriteRow(v); err != nil {
+			return err
+		}
+		return w.Flush()
 	case [][]string:
 		for _, row := range v {
 			if err := w.WriteRow(row); err != nil {
 				return err
 			}
 		}
-		return nil
+		return w.Flush()
 	default:
 		return errs.ErrUnsupportedDataType
 	}
 }
 
+// Flush 刷新缓冲区
+func (w *CSVWriter) Flush() error {
+	if w.writer != nil {
+		w.writer.Flush()
+		return w.writer.Error()
+	}
+	return nil
+}
+
 // Close 关闭CSV文件并刷新缓冲区
 func (w *CSVWriter) Close() error {
+	var firstErr error
+
 	if w.writer != nil {
 		w.writer.Flush()
 		if err := w.writer.Error(); err != nil {
-			return err
+			firstErr = err
 		}
 	}
+
 	if w.file != nil {
-		return w.file.Close()
+		if err := w.file.Close(); err != nil && firstErr == nil {
+			firstErr = err
+		}
 	}
-	return nil
+
+	return firstErr
 }
 
 // CSVReader CSV文件读取器
@@ -114,6 +128,14 @@ func NewCSVReader(pathAndName string) (*CSVReader, error) {
 
 // ReadHeader 读取CSV表头（第一行）
 func (r *CSVReader) ReadHeader() ([]string, error) {
+	if r.reader == nil {
+		return nil, errs.ErrFileReaderNotInitialized
+	}
+	return r.reader.Read()
+}
+
+// ReadRow 逐行读取CSV数据
+func (r *CSVReader) ReadRow() ([]string, error) {
 	if r.reader == nil {
 		return nil, errs.ErrFileReaderNotInitialized
 	}
