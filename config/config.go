@@ -75,7 +75,7 @@ func GetString(key string) string {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetStringOr(key, def string) string {
-	if Has(key) {
+	if !Has(key) {
 		return def
 	}
 	return cfg.GetString(key)
@@ -97,7 +97,7 @@ func GetInt(key string) int {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetIntOr(key string, def int) int {
-	if Has(key) {
+	if !Has(key) {
 		return def
 	}
 	return cfg.GetInt(key)
@@ -119,7 +119,7 @@ func GetInt64(key string) int64 {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetInt64Or(key string, def int64) int64 {
-	if Has(key) {
+	if !Has(key) {
 		return def
 	}
 	return cfg.GetInt64(key)
@@ -141,7 +141,7 @@ func GetUint64(key string) uint64 {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetUint64Or(key string, def uint64) uint64 {
-	if Has(key) {
+	if !Has(key) {
 		return def
 	}
 	return cfg.GetUint64(key)
@@ -163,7 +163,7 @@ func GetFloat64(key string) float64 {
 // 参数 def 表示当配置项不存在时返回的默认值。
 // 返回值是配置值或默认值。
 func GetFloat64Or(key string, def float64) float64 {
-	if Has(key) {
+	if !Has(key) {
 		return def
 	}
 	return cfg.GetFloat64(key)
@@ -185,7 +185,7 @@ func GetDuration(key string) time.Duration {
 // 参数 def 表示当配置项不存在或为零值时返回的默认值。
 // 返回值是配置值或默认值。
 func GetDurationOr(key string, def time.Duration) time.Duration {
-	if Has(key) {
+	if !Has(key) {
 		return def
 	}
 	return cfg.GetDuration(key)
