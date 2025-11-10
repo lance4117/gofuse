@@ -12,6 +12,7 @@ var (
 var (
 	ErrFileReaderNotInitialized = errors.New(" file reader not initialized ")
 	ErrFileWriteNotInitialized  = errors.New(" file writer not initialized ")
+	ErrUnsupportedDataType      = errors.New(" unsupported data type ")
 )
 
 // config

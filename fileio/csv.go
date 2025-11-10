@@ -12,80 +12,131 @@ import (
 
 var DefaultCSVFileName = fmt.Sprintf("writer-%d.csv", times.NowMilli())
 
-// CSVFileIO CSV文件读写器结构体
-type CSVFileIO struct {
-	File     *os.File
-	Writer   *csv.Writer
-	Reader   *csv.Reader
-	Filename string
+// CSVWriter CSV文件写入器
+type CSVWriter struct {
+	file     *os.File
+	writer   *csv.Writer
+	filename string
 }
 
-// NewCSVFileIO 创建一个新的CSV写入器实例
+// NewCSVWriter 创建一个新的CSV写入器实例
 // pathAndName: CSV文件路径 eg: ./path/to/filename.csv
-// 返回CSVWriter指针
-func NewCSVFileIO(pathAndName string) *CSVFileIO {
+// 返回 CSVWriter 指针和错误
+func NewCSVWriter(pathAndName string) (*CSVWriter, error) {
 	if pathAndName == "" {
 		pathAndName = DefaultCSVFileName
 	}
 
-	return &CSVFileIO{Filename: ensureCSVExtension(pathAndName)}
-}
-
-// Create 创建CSV文件并可选择写入表头(读模式)
-// headers: 可选的表头行数据
-func (w *CSVFileIO) Create(headers []string) error {
-	var err error
-	w.File, err = os.Create(w.Filename)
+	filename := ensureCSVExtension(pathAndName)
+	file, err := os.Create(filename)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	w.Writer = csv.NewWriter(w.File)
-	if headers != nil {
-		return w.Write(headers)
-	}
-	return nil
+
+	return &CSVWriter{
+		file:     file,
+		writer:   csv.NewWriter(file),
+		filename: filename,
+	}, nil
 }
 
-// Open 打开已存在的CSV文件用于读取(写模式)
-func (w *CSVFileIO) Open() error {
-	var err error
-	w.File, err = os.Open(w.Filename)
-	if err != nil {
-		return err
-	}
-	w.Reader = csv.NewReader(w.File)
-	return nil
+// WriteHeader 写入CSV表头
+func (w *CSVWriter) WriteHeader(headers []string) error {
+	return w.WriteRow(headers)
 }
 
-// Write 向CSV文件写入一行数据
-// values: 要写入的字符串切片
-func (w *CSVFileIO) Write(values []string) error {
-	if w.Writer == nil {
+// WriteRow 写入一行数据
+func (w *CSVWriter) WriteRow(values []string) error {
+	if w.writer == nil {
 		return errs.ErrFileWriteNotInitialized
 	}
-	if err := w.Writer.Write(values); err != nil {
+	if err := w.writer.Write(values); err != nil {
 		return err
 	}
-	w.Writer.Flush()
-	return nil
+	w.writer.Flush()
+	return w.writer.Error()
 }
 
-// ReadAll 读取CSV文件的所有数据
-// 返回二维字符串切片包含所有行数据
-func (w *CSVFileIO) ReadAll() ([][]string, error) {
-	if w.Reader == nil {
-		return nil, errs.ErrFileReaderNotInitialized
+// Write 通用写入接口实现，支持 []string 或 [][]string
+func (w *CSVWriter) Write(data any) error {
+	switch v := data.(type) {
+	case []string:
+		return w.WriteRow(v)
+	case [][]string:
+		for _, row := range v {
+			if err := w.WriteRow(row); err != nil {
+				return err
+			}
+		}
+		return nil
+	default:
+		return errs.ErrUnsupportedDataType
 	}
-	return w.Reader.ReadAll()
 }
 
 // Close 关闭CSV文件并刷新缓冲区
-func (w *CSVFileIO) Close() error {
-	if w.Writer != nil {
-		w.Writer.Flush()
+func (w *CSVWriter) Close() error {
+	if w.writer != nil {
+		w.writer.Flush()
+		if err := w.writer.Error(); err != nil {
+			return err
+		}
 	}
-	if w.File != nil {
-		return w.File.Close()
+	if w.file != nil {
+		return w.file.Close()
+	}
+	return nil
+}
+
+// CSVReader CSV文件读取器
+type CSVReader struct {
+	file     *os.File
+	reader   *csv.Reader
+	filename string
+}
+
+// NewCSVReader 创建一个新的CSV读取器实例
+// pathAndName: CSV文件路径 eg: ./path/to/filename.csv
+// 返回 CSVReader 指针和错误
+func NewCSVReader(pathAndName string) (*CSVReader, error) {
+	filename := ensureCSVExtension(pathAndName)
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	return &CSVReader{
+		file:     file,
+		reader:   csv.NewReader(file),
+		filename: filename,
+	}, nil
+}
+
+// ReadHeader 读取CSV表头（第一行）
+func (r *CSVReader) ReadHeader() ([]string, error) {
+	if r.reader == nil {
+		return nil, errs.ErrFileReaderNotInitialized
+	}
+	return r.reader.Read()
+}
+
+// ReadAll 读取CSV文件的所有数据
+func (r *CSVReader) ReadAll() ([][]string, error) {
+	if r.reader == nil {
+		return nil, errs.ErrFileReaderNotInitialized
+	}
+	return r.reader.ReadAll()
+}
+
+// Read 通用读取接口实现，返回所有数据
+func (r *CSVReader) Read() (any, error) {
+	return r.ReadAll()
+}
+
+// Close 关闭CSV文件
+func (r *CSVReader) Close() error {
+	if r.file != nil {
+		return r.file.Close()
 	}
 	return nil
 }
