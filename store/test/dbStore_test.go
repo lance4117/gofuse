@@ -45,7 +45,8 @@ func TestSession(t *testing.T) {
 	if err != nil {
 		t.Skip("mysql not available:", err)
 	}
-	err := repo.DoTx(func(txRepo *dbs.Repo[User]) error {
+
+	err = repo.DoTx(func(txRepo *dbs.Repo[User]) error {
 		if err := txRepo.Insert(&User{Name: "Bob"}); err != nil {
 			return err
 		}

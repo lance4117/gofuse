@@ -58,7 +58,6 @@ func TestMonitor(t *testing.T) {
 
 func Wait() {
 	time.Sleep(5 * time.Second)
-	return
 }
 
 func TestNamePid(t *testing.T) {
