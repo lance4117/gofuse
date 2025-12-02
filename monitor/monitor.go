@@ -2,12 +2,10 @@ package monitor
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/lance4117/gofuse/fileio"
 	"github.com/lance4117/gofuse/logger"
-	"github.com/lance4117/gofuse/times"
 	"github.com/shirou/gopsutil/v4/process"
 )
 
@@ -17,11 +15,11 @@ type Monitor struct {
 	interval   time.Duration
 	duration   time.Duration
 	collectors []Collector
-	writer     fileio.Files
+	writer     fileio.Writer
 }
 
 // NewCustomMonitor 通用构造函数
-func NewCustomMonitor(pid int, interval time.Duration, collectors []Collector, writer fileio.Files) *Monitor {
+func NewCustomMonitor(pid int, interval time.Duration, collectors []Collector, writer fileio.Writer) *Monitor {
 	return &Monitor{
 		pid:        pid,
 		interval:   interval,
@@ -32,12 +30,17 @@ func NewCustomMonitor(pid int, interval time.Duration, collectors []Collector, w
 
 // NewDefaultMonitor 默认构造函数
 func NewDefaultMonitor(pid int, path string) *Monitor {
+	writer, err := fileio.NewCSVWriter(path)
+	if err != nil {
+		logger.Error(err)
+		return nil
+	}
 	return &Monitor{
 		pid:        pid,
 		interval:   time.Second,
 		duration:   time.Minute,
 		collectors: []Collector{NewCPUCollector(), NewMemoryCollector(), NewIOCollector(), NewDiskCollector(path), NewNetCollector()},
-		writer:     fileio.NewCSVFileIO(fmt.Sprintf("monitor-%d", times.NowMilli())),
+		writer:     writer,
 	}
 }
 
@@ -56,7 +59,7 @@ func (m *Monitor) Run(ctx context.Context, showLog bool) error {
 	for _, c := range m.collectors {
 		headers = append(headers, c.Names()...)
 	}
-	if err := m.writer.Create(headers); err != nil {
+	if err := m.writer.Write(headers); err != nil {
 		return err
 	}
 	defer m.writer.Close()

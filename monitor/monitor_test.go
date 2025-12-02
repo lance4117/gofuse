@@ -12,7 +12,7 @@ import (
 )
 
 func TestMonitor(t *testing.T) {
-	appName := "app"
+	appName := "firefox.exe"
 	pids, err := GetPidByName(appName)
 	if err != nil {
 		logger.Error(err)
@@ -33,8 +33,13 @@ func TestMonitor(t *testing.T) {
 
 	start := time.Now()
 
+	writer, err := fileio.NewCSVWriter(fmt.Sprintf("monitor-%d", times.NowMilli()))
+	if err != nil {
+		logger.Error(err)
+		return
+	}
 	// 设置监控程序
-	m := NewCustomMonitor(pid, interval, collectors, fileio.NewCSVFileIO(fmt.Sprintf("monitor-%d", times.NowMilli())))
+	m := NewCustomMonitor(pid, interval, collectors, writer)
 	go func() {
 		err := m.Run(ctx, false)
 		if err != nil {
