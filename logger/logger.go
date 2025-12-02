@@ -2,6 +2,7 @@ package logger
 
 import (
 	"sync"
+	"sync/atomic"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -10,7 +11,7 @@ import (
 var (
 	once          sync.Once
 	sugaredLogger *zap.SugaredLogger
-	initialized   bool
+	initialized   atomic.Bool
 )
 
 // Config 日志配置
@@ -66,7 +67,7 @@ func Init(config Config) error {
 		}
 
 		sugaredLogger = logger.Sugar()
-		initialized = true
+		initialized.Store(true)
 	})
 	return err
 }
@@ -80,7 +81,7 @@ func MustInit(config Config) {
 
 // ensureInitialized 确���日志已初始化，如果未初始化则使用默认配置
 func ensureInitialized() {
-	if !initialized {
+	if !initialized.Load() {
 		_ = Init(DefaultConfig())
 	}
 }

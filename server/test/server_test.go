@@ -16,7 +16,9 @@ func TestInitServer(t *testing.T) {
 	engine := server.NewHTTP(true)
 	engine.POST("/hello", Query1())
 
-	engine.Run()
+	if err := engine.Run(); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func Query1() server.ContextHandler {

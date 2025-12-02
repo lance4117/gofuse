@@ -38,7 +38,8 @@ func (c *Context) SetAccount(account *Account) {
 	if account == nil {
 		return
 	}
-	c.GinCtx.Set("account", *account)
+	// 存指针以便后续断言一致，避免复制后无法共享更新。
+	c.GinCtx.Set("account", account)
 }
 
 // Header 返回http请求头

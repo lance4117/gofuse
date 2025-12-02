@@ -34,7 +34,7 @@ func NewPebbleKV(config PebbleConfig) (KVStore, error) {
 		opts.EnsureDefaults()
 	}
 	// 获取实例
-	kv, err := pebble.Open(config.DirName, config.Options)
+	kv, err := pebble.Open(config.DirName, opts)
 	if err != nil {
 		return nil, err
 	}

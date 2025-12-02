@@ -13,13 +13,13 @@ type Cache struct {
 	BigCache *bigcache.BigCache
 }
 
-// NewCache 初始化带时间过期的缓存,0为永不过期
+// NewCache 初始化带过期时间的缓存,0为不过期
 func NewCache(expTime time.Duration) (*Cache, error) {
 	cache, err := bigcache.NewBigCache(bigcache.DefaultConfig(expTime))
 	return &Cache{cache}, err
 }
 
-// Set 将指定的key存储到缓存中
+// Set 将指定key存储序列化数据
 func (i *Cache) Set(key string, value any) error {
 	marshal, err := codec.MPMarshal(value)
 	if err != nil {
@@ -28,9 +28,12 @@ func (i *Cache) Set(key string, value any) error {
 	return i.BigCache.Set(key, marshal)
 }
 
-// Get 传入key 和 v指针，返回相应类型
+// Get 根据key 将 v指针,返回对应数据
 func (i *Cache) Get(key string, v any) error {
-	// 检查 v 是否为指针类型
+	if v == nil {
+		return errs.ErrNeedPointer
+	}
+	// 判断 v 是否为指针类型
 	if reflect.TypeOf(v).Kind() != reflect.Ptr {
 		return errs.ErrNeedPointer
 	}

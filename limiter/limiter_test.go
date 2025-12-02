@@ -22,5 +22,5 @@ func TestLimiter(t *testing.T) {
 		ctx.OK(gin.H{"msg": "pong"})
 	})
 
-	s.Run(":8080")
+	_ = s.Run(":8080")
 }
