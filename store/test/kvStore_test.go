@@ -1,17 +1,24 @@
 package test
 
 import (
+	"errors"
+	"os"
+	"strconv"
 	"testing"
 
+	"github.com/lance4117/gofuse/errs"
 	"github.com/lance4117/gofuse/store/kvs"
 )
 
 func TestPebble(t *testing.T) {
-	config := kvs.NewPebbleConfig("./data")
+	config := kvs.NewPebbleConfig(t.TempDir())
 	peb, err := kvs.NewPebbleKV(config)
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Cleanup(func() {
+		_ = peb.Close()
+	})
 
 	has, err := peb.Has("a")
 	if err != nil {
@@ -21,10 +28,9 @@ func TestPebble(t *testing.T) {
 	t.Log(has)
 
 	get, err := peb.Get("a")
-	if err != nil {
+	if err != nil && !errors.Is(err, errs.ErrKeyNotFound) {
 		t.Error(err)
 	}
-
 	t.Log(get)
 
 	err = peb.Put("test", []byte("foo"))
@@ -49,7 +55,23 @@ func TestPebble(t *testing.T) {
 }
 
 func TestRedis(t *testing.T) {
-	config := kvs.NewRedisConfig("localhost:6379", "", 0, 100)
+	addr := os.Getenv("TEST_REDIS_ADDR")
+	if addr == "" {
+		t.Skip("set TEST_REDIS_ADDR to run redis integration tests")
+	}
+	db := 0
+	if envDB := os.Getenv("TEST_REDIS_DB"); envDB != "" {
+		if parsed, err := strconv.Atoi(envDB); err == nil {
+			db = parsed
+		}
+	}
+	poolSize := 100
+	if envPool := os.Getenv("TEST_REDIS_POOLSIZE"); envPool != "" {
+		if parsed, err := strconv.Atoi(envPool); err == nil {
+			poolSize = parsed
+		}
+	}
+	config := kvs.NewRedisConfig(addr, os.Getenv("TEST_REDIS_PASSWORD"), db, poolSize)
 	store, err := kvs.NewRedisKV(config)
 	if err != nil {
 		t.Skip("redis not available:", err)

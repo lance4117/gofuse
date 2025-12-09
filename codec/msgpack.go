@@ -11,7 +11,10 @@ func MPMarshal(value any) ([]byte, error) {
 
 // MPUnmarshal 将bytes反序列化为value相对应的结构
 func MPUnmarshal(bytes []byte, value any) error {
-	return msgpack.Unmarshal(bytes, &value)
+	if value == nil {
+		return msgpack.Unmarshal(bytes, nil)
+	}
+	return msgpack.Unmarshal(bytes, value)
 }
 
 // MPUnmarshalTo 将bytes反序列化为泛型相对应的结构

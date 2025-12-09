@@ -7,7 +7,13 @@ import (
 
 func TestId(t *testing.T) {
 	id, err := NewId()
-	t.Log(id, err)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if id == 0 {
+		t.Fatalf("unexpected zero id")
+	}
+	t.Log(id)
 }
 
 func TestArticle(t *testing.T) {

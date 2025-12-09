@@ -22,7 +22,9 @@ func TestMsgPack(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(user)
+	if user.Uid != user1.Uid || user.Name != user1.Name {
+		t.Fatalf("MPUnmarshalTo mismatch, got %+v", user)
+	}
 
 	var usertest User
 	err = MPUnmarshal(bytes, &usertest)
@@ -30,7 +32,9 @@ func TestMsgPack(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Log(usertest)
+	if usertest.Uid != user1.Uid || usertest.Name != user1.Name {
+		t.Fatalf("MPUnmarshal mismatch, got %+v", usertest)
+	}
 }
 
 func TestJSON(t *testing.T) {

@@ -1,6 +1,8 @@
 package gen
 
 import (
+	"fmt"
+	"math"
 	"math/rand/v2"
 	"time"
 
@@ -17,9 +19,16 @@ var getDefault = once.DoWithErr(func() (*sf.Sonyflake, error) {
 func NewId() (int64, error) {
 	snowflake, err := getDefault()
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
-	return snowflake.NextID()
+	id, err := snowflake.NextID()
+	if err != nil {
+		return 0, err
+	}
+	if id > math.MaxInt64 {
+		return 0, fmt.Errorf("snowflake id overflow: %d", id)
+	}
+	return id, nil
 }
 
 // ShortID 生成可读性强的 22~26 位 base62 短 ID（时间戳 + 随机）

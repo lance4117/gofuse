@@ -3,6 +3,9 @@ package monitor
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strconv"
 	"testing"
 	"time"
 
@@ -12,20 +15,30 @@ import (
 )
 
 func TestMonitor(t *testing.T) {
-	appName := "firefox.exe"
-	pids, err := GetPidByName(appName)
-	if err != nil {
-		logger.Error(err)
-		return
+	pidStr := os.Getenv("TEST_MONITOR_PID")
+	appName := os.Getenv("TEST_MONITOR_NAME")
+	var pid int
+
+	switch {
+	case pidStr != "":
+		parsed, err := strconv.Atoi(pidStr)
+		if err != nil {
+			t.Skipf("invalid TEST_MONITOR_PID: %v", err)
+		}
+		pid = parsed
+	case appName != "":
+		pids, err := GetPidByName(appName)
+		if err != nil || len(pids) == 0 {
+			t.Skipf("no pid found for %s: %v", appName, err)
+		}
+		pid = pids[0]
+	default:
+		t.Skip("set TEST_MONITOR_PID or TEST_MONITOR_NAME to run monitor integration test")
 	}
-	if pids == nil {
-		logger.Fatal("pid is nil")
-		return
-	}
-	pid := pids[0]
+
 	interval := time.Second * 1
 	collectors := []Collector{NewCPUCollector(), NewMemoryCollector(),
-		NewIOCollector(), NewDiskCollector("D:\\code\\zerod")}
+		NewIOCollector(), NewDiskCollector(t.TempDir())}
 
 	// 用 ctx 管控整个生命周期：任务结束 -> cancel -> 监控退出
 	ctx, cancel := context.WithCancel(context.Background())
@@ -33,7 +46,8 @@ func TestMonitor(t *testing.T) {
 
 	start := time.Now()
 
-	writer, err := fileio.NewCSVWriter(fmt.Sprintf("monitor-%d", times.NowMilli()))
+	tempFile := filepath.Join(t.TempDir(), fmt.Sprintf("monitor-%d", times.NowMilli()))
+	writer, err := fileio.NewCSVWriter(tempFile)
 	if err != nil {
 		logger.Error(err)
 		return
@@ -57,7 +71,7 @@ func TestMonitor(t *testing.T) {
 }
 
 func Wait() {
-	time.Sleep(5 * time.Second)
+	time.Sleep(2 * time.Second)
 }
 
 func TestNamePid(t *testing.T) {

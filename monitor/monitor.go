@@ -78,7 +78,7 @@ func (m *Monitor) Run(ctx context.Context, showLog bool) error {
 				val, err := c.Collect(p, now)
 				if err != nil {
 					row = append(row, "ERR")
-					logger.Error("collector %s failed: %v", c.Names(), err)
+					logger.Errorf("collector %s failed: %v", c.Names(), err)
 				} else {
 					row = append(row, val...)
 				}

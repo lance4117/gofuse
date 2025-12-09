@@ -1,21 +1,35 @@
 package test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/lance4117/gofuse/store/dbs"
 )
 
-func TestMysql(t *testing.T) {
-	cfg := dbs.Config{
-		Name:            "cfg1",
-		Driver:          "mysql",
-		DSN:             "admin:@2CSacf378*`@/node1?charset=utf8",
+func mysqlCfg(t *testing.T) dbs.Config {
+	t.Helper()
+	dsn := os.Getenv("TEST_MYSQL_DSN")
+	if dsn == "" {
+		t.Skip("set TEST_MYSQL_DSN to run mysql integration tests")
+	}
+	driver := os.Getenv("TEST_MYSQL_DRIVER")
+	if driver == "" {
+		driver = "mysql"
+	}
+	return dbs.Config{
+		Name:            "test-mysql",
+		Driver:          driver,
+		DSN:             dsn,
 		MaxOpenConns:    1,
 		MaxIdleConns:    1,
 		ConnMaxLifetime: 0,
-		ShowSQL:         true,
+		ShowSQL:         false,
 	}
+}
+
+func TestMysql(t *testing.T) {
+	cfg := mysqlCfg(t)
 
 	repo, err := dbs.NewRepo[User](cfg)
 	if err != nil {
@@ -32,15 +46,7 @@ func TestMysql(t *testing.T) {
 }
 
 func TestSession(t *testing.T) {
-	cfg := dbs.Config{
-		Name:            "cfg1",
-		Driver:          "mysql",
-		DSN:             "admin:@2CSacf378*`@/node1?charset=utf8",
-		MaxOpenConns:    1,
-		MaxIdleConns:    1,
-		ConnMaxLifetime: 0,
-		ShowSQL:         true,
-	}
+	cfg := mysqlCfg(t)
 	repo, err := dbs.NewRepo[User](cfg)
 	if err != nil {
 		t.Skip("mysql not available:", err)
