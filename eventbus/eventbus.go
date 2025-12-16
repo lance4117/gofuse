@@ -9,25 +9,29 @@ import (
 	"github.com/lance4117/gofuse/once"
 )
 
+// Topic 事件主题类型，建议使用 iota 定义常量
 type Topic int
 
+// Event 事件结构体，包含主题和数据
 type Event struct {
-	Topic Topic
-	Data  any
+	Topic Topic // 事件主题
+	Data  any   // 事件携带的数据
 }
 
-// subscriber 包装订阅者函数和唯一ID
+// subscriber 内部订阅者结构，包装订阅函数和唯一ID
 type subscriber struct {
-	id int
-	fn func(event *Event)
+	id int                // 唯一标识符，用于取消订阅
+	fn func(event *Event) // 订阅者回调函数
 }
 
+// EventBus 事件总线，管理所有主题的订阅和发布
 type EventBus struct {
-	subs   map[Topic][]subscriber
-	mu     sync.RWMutex // 使用读写锁提高并发性能
-	nextID int          // 用于生成唯一订阅者ID
+	subs   map[Topic][]subscriber // 主题到订阅者列表的映射
+	mu     sync.RWMutex           // 读写锁，保护并发访问
+	nextID int                    // 订阅者ID生成器
 }
 
+// GetEventBus 获取全局单例事件总线实例
 var GetEventBus = once.Do(func() *EventBus {
 	return &EventBus{
 		subs: make(map[Topic][]subscriber),
