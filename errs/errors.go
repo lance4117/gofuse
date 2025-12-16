@@ -34,6 +34,11 @@ var (
 	ErrNoAmount     = errors.New(" no amount ")
 )
 
+// eventbus
+var (
+	ErrSubsPanic = errors.New(" eventbus subscriber panic ")
+)
+
 var (
 	ErrAESKeyLength = errors.New(" key length must be 16,24,32")
 )
