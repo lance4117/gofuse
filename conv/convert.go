@@ -1,10 +1,28 @@
 package conv
 
 import (
+	"encoding/binary"
 	"encoding/hex"
 	"fmt"
 	"strconv"
+
+	"github.com/lance4117/gofuse/errs"
 )
+
+// Int64ToBytes 将 int64 转换为大端序字节数组
+func Int64ToBytes(v int64) []byte {
+	b := make([]byte, 8)
+	binary.BigEndian.PutUint64(b, uint64(v))
+	return b
+}
+
+// BytesToInt64 将大端序字节数组转换为 int64
+func BytesToInt64(b []byte) (int64, error) {
+	if len(b) != 8 {
+		return 0, errs.ErrBigEndianLength
+	}
+	return int64(binary.BigEndian.Uint64(b)), nil
+}
 
 // IntToStr 将整数转换为字符串
 func IntToStr(v int) string { return strconv.Itoa(v) }

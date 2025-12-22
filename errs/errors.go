@@ -34,11 +34,9 @@ var (
 	ErrNoAmount     = errors.New(" no amount ")
 )
 
-// eventbus
+// eventbus crypt conv
 var (
-	ErrSubsPanic = errors.New(" eventbus subscriber panic ")
-)
-
-var (
-	ErrAESKeyLength = errors.New(" key length must be 16,24,32")
+	ErrSubsPanic       = errors.New(" eventbus subscriber panic ")
+	ErrAESKeyLength    = errors.New(" key length must be 16,24,32")
+	ErrBigEndianLength = errors.New(" bytes length must be 8 ")
 )
