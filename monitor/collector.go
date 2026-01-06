@@ -94,7 +94,9 @@ func (c *IOCollector) Collect(p *process.Process, now time.Time) ([]string, erro
 
 // DiskCollector 磁盘采集器（必须初始化path）
 type DiskCollector struct {
-	path string
+	path     string
+	prevUsed uint64
+	hasPrev  bool
 }
 
 // NewDiskCollector 初始化磁盘采集器
@@ -103,7 +105,7 @@ func NewDiskCollector(path string) *DiskCollector {
 }
 
 func (d *DiskCollector) Names() []string {
-	return []string{"DiskUsed(MB)", "DiskFree(MB)", "DiskUsed(%)"}
+	return []string{"DiskUsed(MB)", "DiskFree(MB)", "DiskUsed(%)", "DiskUsedDelta(MB)"}
 }
 
 func (d *DiskCollector) Collect(_ *process.Process, _ time.Time) ([]string, error) {
@@ -111,9 +113,17 @@ func (d *DiskCollector) Collect(_ *process.Process, _ time.Time) ([]string, erro
 	if err != nil {
 		return nil, err
 	}
+	deltaMB := int64(0)
+	if d.hasPrev {
+		deltaBytes := int64(usage.Used) - int64(d.prevUsed)
+		deltaMB = deltaBytes / (1024 * 1024)
+	}
+	d.prevUsed = usage.Used
+	d.hasPrev = true
 	return []string{
 		fmt.Sprintf("%d", usage.Used/1024/1024),
 		fmt.Sprintf("%d", usage.Free/1024/1024),
+		fmt.Sprintf("%d", deltaMB),
 		fmt.Sprintf("%.2f", usage.UsedPercent),
 	}, nil
 }
